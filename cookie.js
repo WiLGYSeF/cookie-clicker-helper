@@ -175,8 +175,33 @@ function autoclickGoldenCookies() {
   }, 1000);
 }
 
+function autoclickWhenBuffed() {
+  return setInterval(() => {
+    const buffs = Object.values(Game.buffs);
+    if (buffs.length === 0) {
+      return;
+    }
+
+    let maxTime = 0;
+
+    for (const buff of buffs) {
+      if (buff.add) {
+        if (buff.time > maxTime) {
+          maxTime = buff.time;
+        }
+      }
+    }
+
+    if (maxTime > 0 && !isAutoclicking()) {
+      autoclick((maxTime / 30) * 1000);
+    }
+  }, 1000);
+}
+
 var ttpit = tooltipPriceInTime();
 var acgc = autoclickGoldenCookies();
+var acwb = autoclickWhenBuffed();
 
 // clearInterval(ttpit);
 // clearInterval(acgc);
+// clearInterval(acwb);
