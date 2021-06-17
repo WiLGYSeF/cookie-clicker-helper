@@ -65,8 +65,7 @@ function secondsToStr(seconds) {
 
 var _tooltipHooks = [];
 
-function tooltipHook() {
-  const tooltipAnchor = document.getElementById('tooltipAnchor');
+function tooltipHook(tooltip) {
   const tooltip = document.getElementById('tooltip');
 
   let skip = 0;
@@ -87,7 +86,7 @@ function tooltipHook() {
 
     skip++;
   });
-  observer.observe(tooltipAnchor, {
+  observer.observe(tooltip, {
     childList: true,
     subtree: true,
   });
