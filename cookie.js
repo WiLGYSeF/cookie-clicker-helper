@@ -63,62 +63,11 @@ function secondsToStr(seconds) {
   return str.length === 0 ? '' : str.substring(0, str.length - 1);
 }
 
-function tooltipPriceInTime() {
+var _tooltipHooks = [];
+
+function tooltipHook() {
   const tooltipAnchor = document.getElementById('tooltipAnchor');
   const tooltip = document.getElementById('tooltip');
-
-  const updateTooltip = () => {
-    const elePrice = getFirstElementByClassName(tooltip, 'price');
-    if (elePrice === null || elePrice.classList.contains('lump')) {
-      return;
-    }
-
-    const price = toNumber(elePrice.innerHTML);
-    const parent = elePrice.parentElement;
-
-    for (const small of parent.getElementsByTagName('small')) {
-      if (small !== null && (
-        small.innerHTML.includes(' CpS')
-        || small.innerHTML.includes('to plant')
-      )) {
-        return;
-      }
-    }
-
-    let elePriceTime = getFirstElementByClassName(tooltip, 'price-time');
-    if (elePriceTime === null) {
-      elePriceTime = document.createElement('span');
-      elePriceTime.classList.add('price-time');
-
-      parent.style.display = 'flex';
-      parent.style.flexDirection = 'column';
-      parent.appendChild(elePriceTime);
-    }
-
-    elePriceTime.innerHTML = secondsToStr(Math.trunc(price / Game.cookiesPs));
-
-    const data = getFirstElementByClassName(tooltip, 'data');
-    if (data === null) {
-      return;
-    }
-
-    const bold = getFirstElementByTagName(data, 'b');
-    const production = toNumber(bold.innerHTML);
-    if (Number.isNaN(production)) {
-      return;
-    }
-
-    let eleCostRatio = getFirstElementByClassName(tooltip, 'cost-ratio');
-    if (eleCostRatio === null) {
-      eleCostRatio = document.createElement('span');
-      eleCostRatio.classList.add('cost-ratio');
-
-      parent.appendChild(eleCostRatio);
-    }
-
-    const val = ((2 / (1 + Math.exp(-production / price))) - 1).toExponential();
-    eleCostRatio.innerHTML = val.substring(0, 6) + val.substring(val.length - 3);
-  };
 
   let skip = 0;
 
@@ -130,7 +79,9 @@ function tooltipPriceInTime() {
 
     for (const mutation of mutationsList) {
       if (mutation.type === 'childList') {
-        updateTooltip();
+        for (const hook of _tooltipHooks) {
+          hook(tooltip);
+        }
       }
     }
 
@@ -143,70 +94,97 @@ function tooltipPriceInTime() {
   return observer;
 }
 
-function tooltipMagicRefillTime() {
-  const tooltipAnchor = document.getElementById('tooltipAnchor');
-  const tooltip = document.getElementById('tooltip');
+function tooltipPriceInTime(tooltip) {
+  const elePrice = getFirstElementByClassName(tooltip, 'price');
+  if (elePrice === null || elePrice.classList.contains('lump')) {
+    return false;
+  }
 
+  const price = toNumber(elePrice.innerHTML);
+  const parent = elePrice.parentElement;
+
+  for (const small of parent.getElementsByTagName('small')) {
+    if (small !== null && (
+      small.innerHTML.includes(' CpS')
+      || small.innerHTML.includes('to plant')
+    )) {
+      return false;
+    }
+  }
+
+  let elePriceTime = getFirstElementByClassName(tooltip, 'price-time');
+  if (elePriceTime === null) {
+    elePriceTime = document.createElement('span');
+    elePriceTime.classList.add('price-time');
+
+    parent.style.display = 'flex';
+    parent.style.flexDirection = 'column';
+    parent.appendChild(elePriceTime);
+  }
+
+  elePriceTime.innerHTML = secondsToStr(Math.trunc(price / Game.cookiesPs));
+
+  const data = getFirstElementByClassName(tooltip, 'data');
+  if (data === null) {
+    return true;
+  }
+
+  const bold = getFirstElementByTagName(data, 'b');
+  const production = toNumber(bold.innerHTML);
+  if (Number.isNaN(production)) {
+    return true;
+  }
+
+  let eleCostRatio = getFirstElementByClassName(tooltip, 'cost-ratio');
+  if (eleCostRatio === null) {
+    eleCostRatio = document.createElement('span');
+    eleCostRatio.classList.add('cost-ratio');
+
+    parent.appendChild(eleCostRatio);
+  }
+
+  const val = ((2 / (1 + Math.exp(-production / price))) - 1).toExponential();
+  eleCostRatio.innerHTML = val.substring(0, 6) + val.substring(val.length - 3);
+  return true;
+}
+
+function tooltipMagicRefillTime(tooltip) {
   const grimoireBarText = document.getElementById('grimoireBarText');
+  const match = grimoireBarText.innerHTML.match(new RegExp(String.raw`^(\d+)/(\d+) \(\+([\d.]+)/s\)$`));
+  if (match === null) {
+    return false;
+  }
 
-  const updateTooltip = () => {
-    const match = grimoireBarText.innerHTML.match(new RegExp(String.raw`^(\d+)/(\d+) \(\+([\d.]+)/s\)$`));
-    if (match === null) {
-      return;
-    }
+  const remainingTime = (parseFloat(match[2]) - parseFloat(match[1])) / parseFloat(match[3]);
 
-    const remainingTime = (parseFloat(match[2]) - parseFloat(match[1])) / parseFloat(match[3]);
-
-    let foundDiv = false;
-    for (const div of tooltip.getElementsByTagName('div')) {
-      for (const b of div.getElementsByTagName('b')) {
-        if (b.innerHTML === 'Wizard towers') {
-          foundDiv = true;
-          break;
-        }
-      }
-
-      if (!foundDiv) {
-        continue;
-      }
-
-      let eleRefillTime = getFirstElementByClassName(tooltip, 'refill-time');
-      if (eleRefillTime === null) {
-        const line = document.createElement('div');
-        line.classList.add('line');
-        div.appendChild(line);
-
-        eleRefillTime = document.createElement('span');
-        eleRefillTime.classList.add('refill-time');
-        div.appendChild(eleRefillTime);
-      }
-
-      eleRefillTime.innerHTML = 'Refills in ' + secondsToStr(Math.trunc(remainingTime));
-      break;
-    }
-  };
-
-  let skip = 0;
-
-  const observer = new MutationObserver((mutationsList, _) => {
-    if (skip > 0) {
-      skip--;
-      return;
-    }
-
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        updateTooltip();
+  let foundDiv = false;
+  for (const div of tooltip.getElementsByTagName('div')) {
+    for (const b of div.getElementsByTagName('b')) {
+      if (b.innerHTML === 'Wizard towers') {
+        foundDiv = true;
+        break;
       }
     }
 
-    skip++;
-  });
-  observer.observe(tooltipAnchor, {
-    childList: true,
-    subtree: true,
-  });
-  return observer;
+    if (!foundDiv) {
+      continue;
+    }
+
+    let eleRefillTime = getFirstElementByClassName(tooltip, 'refill-time');
+    if (eleRefillTime === null) {
+      const line = document.createElement('div');
+      line.classList.add('line');
+      div.appendChild(line);
+
+      eleRefillTime = document.createElement('span');
+      eleRefillTime.classList.add('refill-time');
+      div.appendChild(eleRefillTime);
+    }
+
+    eleRefillTime.innerHTML = 'Refills in ' + secondsToStr(Math.trunc(remainingTime));
+    return true;
+  }
+  return false;
 }
 
 var _autoclicking = 0;
@@ -266,12 +244,13 @@ function autoclickWhenBuffed() {
   }, 1000);
 }
 
-var ttpit = tooltipPriceInTime();
-var ttmrt = tooltipMagicRefillTime();
+_tooltipHooks.push(tooltipPriceInTime);
+_tooltipHooks.push(tooltipMagicRefillTime);
+
+var tthook = tooltipHook();
 var acgc = autoclickGoldenCookies();
 var acwb = autoclickWhenBuffed();
 
-// ttpit.disconnect();
-// ttmrt.disconnect();
+// tthook.disconnect();
 // clearInterval(acgc);
 // clearInterval(acwb);
