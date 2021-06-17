@@ -65,7 +65,7 @@ function secondsToStr(seconds) {
 
 var _tooltipHooks = [];
 
-function tooltipHook(tooltip) {
+function tooltipHook() {
   const tooltip = document.getElementById('tooltip');
 
   let skip = 0;
@@ -80,6 +80,48 @@ function tooltipHook(tooltip) {
       if (mutation.type === 'childList') {
         for (const hook of _tooltipHooks) {
           hook(tooltip);
+        }
+      }
+    }
+
+    skip++;
+  });
+  observer.observe(tooltip, {
+    childList: true,
+    subtree: true,
+  });
+  return observer;
+}
+
+function ascendTooltipHook() {
+  const tooltip = document.getElementById('ascendTooltip');
+
+  let skip = 0;
+
+  const observer = new MutationObserver((mutationsList, _) => {
+    if (skip > 0) {
+      skip--;
+      return;
+    }
+
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        let eleRemainingTime = getFirstElementByClassName(tooltip, 'remaining-time');
+        if (eleRemainingTime === null) {
+          eleRemainingTime = document.createElement('span');
+          eleRemainingTime.classList.add('remaining-time');
+
+          tooltip.appendChild(eleRemainingTime);
+        }
+
+        for (const b of tooltip.getElementsByTagName('b')) {
+          const match = b.innerHTML.match(/^(.+) more cookies$/);
+          if (match != null) {
+            eleRemainingTime.innerHTML = secondsToStr(
+              Math.trunc(toNumber(match[1]) / Game.cookiesPs),
+            );
+            break;
+          }
         }
       }
     }
@@ -247,6 +289,7 @@ _tooltipHooks.push(tooltipPriceInTime);
 _tooltipHooks.push(tooltipMagicRefillTime);
 
 var tthook = tooltipHook();
+var atthook = ascendTooltipHook();
 var acgc = autoclickGoldenCookies();
 var acwb = autoclickWhenBuffed();
 
