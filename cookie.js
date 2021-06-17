@@ -74,13 +74,19 @@ function elementMutationObserver(element, callback) {
       return;
     }
 
+    let modified = 0;
+
     for (const mutation of mutationsList) {
       if (mutation.type === 'childList') {
-        callback();
+        if(callback()) {
+          modified++;
+        }
       }
     }
 
-    skip++;
+    if (modified > 0) {
+      skip++;
+    }
   });
   observer.observe(element, {
     childList: true,
@@ -92,9 +98,13 @@ function elementMutationObserver(element, callback) {
 function tooltipHook() {
   const tooltip = document.getElementById('tooltip');
   return elementMutationObserver(tooltip, () => {
+    let modified = 0;
     for (const hook of _tooltipHooks) {
-      hook(tooltip);
+      if(hook(tooltip)) {
+        modified++;
+      }
     }
+    return modified > 0;
   });
 }
 
@@ -118,6 +128,7 @@ function ascendTooltipHook() {
         break;
       }
     }
+    return true;
   });
 }
 
