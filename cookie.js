@@ -33,38 +33,39 @@ function toNumber(val) {
     vigintillion: 1e63,
   };
 
-  if (parts.length == 1) {
+  if (parts.length === 1) {
     return parseInt(parts[0], 10);
-  } else
-  if (parts.length == 2) {
+  } if (parts.length === 2) {
     return parseFloat(parts[0]) * multiplier[parts[1]];
-  } else {
-    return NaN;
   }
+  return NaN;
 }
 
 function secondsToStr(seconds) {
+  let sec = seconds;
   let str = '';
-  if (seconds >= 3600) {
-    str += `${(seconds / 3600) >> 0}h `;
-    seconds %= 3600;
+  if (sec >= 3600) {
+    str += `${Math.trunc(sec / 3600)}h `;
+    sec %= 3600;
   }
-  if (seconds >= 60) {
-    str += `${(seconds / 60) >> 0}m `;
-    seconds %= 60;
+  if (sec >= 60) {
+    str += `${Math.trunc(sec / 60)}m `;
+    sec %= 60;
   }
-  if (seconds > 0) {
-    str += `${seconds}s `;
+  if (sec > 0) {
+    str += `${sec}s `;
   }
-  if (seconds === 0 && str.length === 0) {
+  if (sec === 0 && str.length === 0) {
     str = '0s ';
   }
   return str.length === 0 ? '' : str.substring(0, str.length - 1);
 }
 
 function tooltipPriceInTime() {
+  const tooltipAnchor = document.getElementById('tooltipAnchor');
   const tooltip = document.getElementById('tooltip');
-  return setInterval(() => {
+
+  const updateTooltip = () => {
     const elePrice = getFirstElementByClassName(tooltip, 'price');
     if (elePrice === null || elePrice.classList.contains('lump')) {
       return;
@@ -92,7 +93,7 @@ function tooltipPriceInTime() {
       parent.appendChild(elePriceTime);
     }
 
-    elePriceTime.innerHTML = secondsToStr((price / Game.cookiesPs) >> 0);
+    elePriceTime.innerHTML = secondsToStr(Math.trunc(price / Game.cookiesPs));
 
     const data = getFirstElementByClassName(tooltip, 'data');
     if (data === null) {
@@ -101,20 +102,41 @@ function tooltipPriceInTime() {
 
     const bold = getFirstElementByTagName(data, 'b');
     const production = toNumber(bold.innerHTML);
-    if (isNaN(production)) {
+    if (Number.isNaN(production)) {
       return;
     }
 
     let eleCostRatio = getFirstElementByClassName(tooltip, 'cost-ratio');
     if (eleCostRatio === null) {
       eleCostRatio = document.createElement('span');
-      eleCostRatio.classList.add('price-time');
+      eleCostRatio.classList.add('cost-ratio');
 
       parent.appendChild(eleCostRatio);
     }
 
-    eleCostRatio.innerHTML = production / price;
-  }, 250);
+    eleCostRatio.innerHTML = ((2 / (1 + Math.exp(-production / price))) - 1).toExponential();
+  };
+
+  let skip = 0;
+
+  const observer = new MutationObserver((mutationsList, _) => {
+    if (skip > 0) {
+      skip--;
+      return;
+    }
+
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        updateTooltip();
+      }
+    }
+
+    skip++;
+  });
+  observer.observe(tooltipAnchor, {
+    childList: true,
+    subtree: true,
+  });
 }
 
 function autoclick(duration) {
