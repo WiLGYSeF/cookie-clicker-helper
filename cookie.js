@@ -140,6 +140,73 @@ function tooltipPriceInTime() {
     childList: true,
     subtree: true,
   });
+  return observer;
+}
+
+function tooltipMagicRefillTime() {
+  const tooltipAnchor = document.getElementById('tooltipAnchor');
+  const tooltip = document.getElementById('tooltip');
+
+  const grimoireBarText = document.getElementById('grimoireBarText');
+
+  const updateTooltip = () => {
+    const match = grimoireBarText.innerHTML.match(new RegExp(String.raw`^(\d+)/(\d+) \(\+([\d.]+)/s\)$`));
+    if (match === null) {
+      return;
+    }
+
+    const remainingTime = (parseFloat(match[2]) - parseFloat(match[1])) / parseFloat(match[3]);
+
+    let foundDiv = false;
+    for (const div of tooltip.getElementsByTagName('div')) {
+      for (const b of div.getElementsByTagName('b')) {
+        if (b.innerHTML === 'Wizard towers') {
+          foundDiv = true;
+          break;
+        }
+      }
+
+      if (!foundDiv) {
+        continue;
+      }
+
+      let eleRefillTime = getFirstElementByClassName(tooltip, 'refill-time');
+      if (eleRefillTime === null) {
+        const line = document.createElement('div');
+        line.classList.add('line');
+        div.appendChild(line);
+
+        eleRefillTime = document.createElement('span');
+        eleRefillTime.classList.add('refill-time');
+        div.appendChild(eleRefillTime);
+      }
+
+      eleRefillTime.innerHTML = 'Refills in ' + secondsToStr(Math.trunc(remainingTime));
+      break;
+    }
+  };
+
+  let skip = 0;
+
+  const observer = new MutationObserver((mutationsList, _) => {
+    if (skip > 0) {
+      skip--;
+      return;
+    }
+
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        updateTooltip();
+      }
+    }
+
+    skip++;
+  });
+  observer.observe(tooltipAnchor, {
+    childList: true,
+    subtree: true,
+  });
+  return observer;
 }
 
 var _autoclicking = 0;
@@ -200,9 +267,11 @@ function autoclickWhenBuffed() {
 }
 
 var ttpit = tooltipPriceInTime();
+var ttmrt = tooltipMagicRefillTime();
 var acgc = autoclickGoldenCookies();
 var acwb = autoclickWhenBuffed();
 
-// clearInterval(ttpit);
+// ttpit.disconnect();
+// ttmrt.disconnect();
 // clearInterval(acgc);
 // clearInterval(acwb);
