@@ -116,7 +116,8 @@ function tooltipPriceInTime() {
       parent.appendChild(eleCostRatio);
     }
 
-    eleCostRatio.innerHTML = ((2 / (1 + Math.exp(-production / price))) - 1).toExponential();
+    const val = ((2 / (1 + Math.exp(-production / price))) - 1).toExponential();
+    eleCostRatio.innerHTML = val.substring(0, 6) + val.substring(val.length - 3);
   };
 
   let skip = 0;
