@@ -1,3 +1,5 @@
+// https://orteil.dashnet.org/cookieclicker/
+
 function getFirstElementByTagName(element, name) {
   const elements = element.getElementsByTagName(name);
   return elements.length !== 0 ? elements[0] : null;
@@ -139,8 +141,12 @@ function tooltipPriceInTime() {
   });
 }
 
+var _autoclicking = 0;
+
 function autoclick(duration) {
   const bigCookie = document.getElementById('bigCookie');
+
+  _autoclicking++;
   const intv = setInterval(() => {
     bigCookie.click();
   }, 100);
@@ -148,9 +154,14 @@ function autoclick(duration) {
   if (duration > 0) {
     setTimeout(() => {
       clearInterval(intv);
+      _autoclicking--;
     }, duration);
   }
   return intv;
+}
+
+function isAutoclicking() {
+  return _autoclicking > 0;
 }
 
 function autoclickGoldenCookies() {
