@@ -65,12 +65,10 @@ function secondsToStr(seconds) {
 
 var _tooltipHooks = [];
 
-function tooltipHook() {
-  const tooltip = document.getElementById('tooltip');
-
+function elementMutationObserver(element, callback) {
   let skip = 0;
 
-  const observer = new MutationObserver((mutationsList, _) => {
+  const observer = new MutationObserver((mutationsList, obs) => {
     if (skip > 0) {
       skip--;
       return;
@@ -78,61 +76,49 @@ function tooltipHook() {
 
     for (const mutation of mutationsList) {
       if (mutation.type === 'childList') {
-        for (const hook of _tooltipHooks) {
-          hook(tooltip);
-        }
+        callback();
       }
     }
 
     skip++;
   });
-  observer.observe(tooltip, {
+  observer.observe(element, {
     childList: true,
     subtree: true,
   });
   return observer;
 }
 
+function tooltipHook() {
+  const tooltip = document.getElementById('tooltip');
+  return elementMutationObserver(tooltip, () => {
+    for (const hook of _tooltipHooks) {
+      hook(tooltip);
+    }
+  });
+}
+
 function ascendTooltipHook() {
   const tooltip = document.getElementById('ascendTooltip');
+  return elementMutationObserver(tooltip, () => {
+    let eleRemainingTime = getFirstElementByClassName(tooltip, 'remaining-time');
+    if (eleRemainingTime === null) {
+      eleRemainingTime = document.createElement('span');
+      eleRemainingTime.classList.add('remaining-time');
 
-  let skip = 0;
-
-  const observer = new MutationObserver((mutationsList, _) => {
-    if (skip > 0) {
-      skip--;
-      return;
+      tooltip.appendChild(eleRemainingTime);
     }
 
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        let eleRemainingTime = getFirstElementByClassName(tooltip, 'remaining-time');
-        if (eleRemainingTime === null) {
-          eleRemainingTime = document.createElement('span');
-          eleRemainingTime.classList.add('remaining-time');
-
-          tooltip.appendChild(eleRemainingTime);
-        }
-
-        for (const b of tooltip.getElementsByTagName('b')) {
-          const match = b.innerHTML.match(/^(.+) more cookies$/);
-          if (match != null) {
-            eleRemainingTime.innerHTML = secondsToStr(
-              Math.trunc(toNumber(match[1]) / Game.cookiesPs),
-            );
-            break;
-          }
-        }
+    for (const b of tooltip.getElementsByTagName('b')) {
+      const match = b.innerHTML.match(/^(.+) more cookies$/);
+      if (match != null) {
+        eleRemainingTime.innerHTML = secondsToStr(
+          Math.trunc(toNumber(match[1]) / Game.cookiesPs),
+        );
+        break;
       }
     }
-
-    skip++;
   });
-  observer.observe(tooltip, {
-    childList: true,
-    subtree: true,
-  });
-  return observer;
 }
 
 function tooltipPriceInTime(tooltip) {
