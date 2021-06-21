@@ -1,5 +1,8 @@
 // https://orteil.dashnet.org/cookieclicker/
 
+// TODO: Game.cookiesPs does not take into account wrinklers
+// TODO: autoclickWhenBuffed() does not know if buff times change
+
 function getFirstElementByTagName(element, name) {
   const elements = element.getElementsByTagName(name);
   return elements.length !== 0 ? elements[0] : null;
@@ -46,6 +49,10 @@ function toNumber(val) {
 function secondsToStr(seconds) {
   let sec = seconds;
   let str = '';
+  if (sec >= 86400) {
+    str += `${Math.trunc(sec / 86400)}d `;
+    sec %= 86400;
+  }
   if (sec >= 3600) {
     str += `${Math.trunc(sec / 3600)}h `;
     sec %= 3600;
@@ -78,7 +85,7 @@ function elementMutationObserver(element, callback) {
 
     for (const mutation of mutationsList) {
       if (mutation.type === 'childList') {
-        if(callback()) {
+        if (callback()) {
           modified++;
         }
       }
@@ -100,7 +107,7 @@ function tooltipHook() {
   return elementMutationObserver(tooltip, () => {
     let modified = 0;
     for (const hook of _tooltipHooks) {
-      if(hook(tooltip)) {
+      if (hook(tooltip)) {
         modified++;
       }
     }
