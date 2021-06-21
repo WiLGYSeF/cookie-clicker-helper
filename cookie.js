@@ -85,6 +85,7 @@ function borderBestProduct() {
     for (const productpair of products) {
       const product = document.getElementById(`product${productpair[0].id}`);
       product.style.border = cidx === colors.length ? '' : `1px solid ${colors[cidx++]}`;
+      product.style.boxSizing = 'border-box';
     }
   }, 250);
 }
