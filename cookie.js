@@ -72,29 +72,19 @@ function secondsToStr(seconds) {
 
 function borderBestProduct() {
   return setInterval(() => {
-    let bestVal = 0;
-    let bestProduct;
+    const products = Game.ObjectsById.filter(
+      (x) => !x.locked,
+    ).map(
+      (x) => [x, x.cps(x) / x.price],
+    );
+    products.sort((a, b) => b[1] - a[1]);
 
-    for (const product of Game.ObjectsById) {
-      if (product.locked === 1) {
-        continue;
-      }
+    const colors = ['#00ff00', '#ffff00'];
+    let cidx = 0;
 
-      const { price } = product;
-      const cps = product.cps(product);
-      if (cps / price > bestVal) {
-        bestVal = cps / price;
-        bestProduct = product;
-      }
-    }
-    if (bestProduct === undefined) {
-      return;
-    }
-
-    for (const product of document.getElementsByClassName('product')) {
-      if (product.classList.contains('unlocked')) {
-        product.style.border = product.id === `product${bestProduct.id}` ? '1px solid #00ff00' : '';
-      }
+    for (const productpair of products) {
+      const product = document.getElementById(`product${productpair[0].id}`);
+      product.style.border = cidx === colors.length ? '' : `1px solid ${colors[cidx++]}`;
     }
   }, 250);
 }
