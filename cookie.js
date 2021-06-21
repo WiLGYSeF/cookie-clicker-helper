@@ -70,6 +70,35 @@ function secondsToStr(seconds) {
   return str.length === 0 ? '' : str.substring(0, str.length - 1);
 }
 
+function borderBestProduct() {
+  return setInterval(() => {
+    let bestVal = 0;
+    let bestProduct;
+
+    for (const product of Game.ObjectsById) {
+      if (product.locked === 1) {
+        continue;
+      }
+
+      const { price } = product;
+      const cps = product.cps(product);
+      if (cps / price > bestVal) {
+        bestVal = cps / price;
+        bestProduct = product;
+      }
+    }
+    if (bestProduct === undefined) {
+      return;
+    }
+
+    for (const product of document.getElementsByClassName('product')) {
+      if (product.classList.contains('unlocked')) {
+        product.style.border = product.id === `product${bestProduct.id}` ? '1px solid #00ff00' : '';
+      }
+    }
+  }, 250);
+}
+
 var _tooltipHooks = [];
 
 function elementMutationObserver(element, callback) {
@@ -298,11 +327,13 @@ function autoclickWhenBuffed() {
 _tooltipHooks.push(tooltipPriceInTime);
 _tooltipHooks.push(tooltipMagicRefillTime);
 
+var bbp = borderBestProduct();
 var tthook = tooltipHook();
 var atthook = ascendTooltipHook();
 var acgc = autoclickGoldenCookies(true);
 var acwb = autoclickWhenBuffed();
 
+// clearInterval(bbp);
 // tthook.disconnect();
 // atthook.disconnect();
 // clearInterval(acgc);
