@@ -258,11 +258,14 @@ function isAutoclicking() {
   return _autoclicking > 0;
 }
 
-function autoclickGoldenCookies() {
+function autoclickGoldenCookies(clickWrath = false) {
   return setInterval(() => {
     const shimmers = document.getElementsByClassName('shimmer');
     for (const shimmer of shimmers) {
-      if (shimmer.attributes.alt.nodeValue === 'Golden cookie') {
+      if (
+        shimmer.attributes.alt.nodeValue === 'Golden cookie'
+        || (clickWrath && shimmer.attributes.alt.nodeValue === 'Wrath cookie')
+      ) {
         shimmer.click();
       }
     }
@@ -279,7 +282,7 @@ function autoclickWhenBuffed() {
     let maxTime = 0;
 
     for (const buff of buffs) {
-      if (buff.add) {
+      if (buff.add) { /* && buff.arg1 > 1 */
         if (buff.time > maxTime) {
           maxTime = buff.time;
         }
@@ -297,9 +300,10 @@ _tooltipHooks.push(tooltipMagicRefillTime);
 
 var tthook = tooltipHook();
 var atthook = ascendTooltipHook();
-var acgc = autoclickGoldenCookies();
+var acgc = autoclickGoldenCookies(true);
 var acwb = autoclickWhenBuffed();
 
 // tthook.disconnect();
+// atthook.disconnect();
 // clearInterval(acgc);
 // clearInterval(acwb);
