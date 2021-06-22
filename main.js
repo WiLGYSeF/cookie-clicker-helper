@@ -5,6 +5,7 @@
 
 // TODO: work on new game
 
+const autoclick = require('./autoclick');
 const util = require('./util');
 const tooltip = require('./tooltip');
 
@@ -26,66 +27,6 @@ function borderBestProduct() {
       product.style.boxSizing = 'border-box';
     }
   }, 250);
-}
-
-var _autoclicking = 0;
-
-function autoclick(duration) {
-  const bigCookie = document.getElementById('bigCookie');
-
-  _autoclicking++;
-  const intv = setInterval(() => {
-    bigCookie.click();
-  }, 100);
-
-  if (duration > 0) {
-    setTimeout(() => {
-      clearInterval(intv);
-      _autoclicking--;
-    }, duration);
-  }
-  return intv;
-}
-
-function isAutoclicking() {
-  return _autoclicking > 0;
-}
-
-function autoclickGoldenCookies(clickWrath = false) {
-  return setInterval(() => {
-    const shimmers = document.getElementsByClassName('shimmer');
-    for (const shimmer of shimmers) {
-      if (
-        shimmer.attributes.alt.nodeValue === 'Golden cookie'
-        || (clickWrath && shimmer.attributes.alt.nodeValue === 'Wrath cookie')
-      ) {
-        shimmer.click();
-      }
-    }
-  }, 1000);
-}
-
-function autoclickWhenBuffed() {
-  return setInterval(() => {
-    const buffs = Object.values(Game.buffs);
-    if (buffs.length === 0) {
-      return;
-    }
-
-    let maxTime = 0;
-
-    for (const buff of buffs) {
-      if (buff.add) { /* && buff.arg1 > 1 */
-        if (buff.time > maxTime) {
-          maxTime = buff.time;
-        }
-      }
-    }
-
-    if (maxTime > 0 && !isAutoclicking()) {
-      autoclick((maxTime / 30) * 1000);
-    }
-  }, 1000);
 }
 
 function cookieInfo() {
@@ -117,8 +58,8 @@ function cookieInfo() {
 tooltip.modifyTooltips();
 
 var bbp = borderBestProduct();
-var acgc = autoclickGoldenCookies(true);
-var acwb = autoclickWhenBuffed();
+var acgc = autoclick.autoclickGoldenCookies(true);
+var acwb = autoclick.autoclickWhenBuffed();
 var ci = cookieInfo();
 
 // clearInterval(bbp);
