@@ -5,7 +5,7 @@
 
 // TODO: work on new game
 
-const utils = require('./utils');
+const util = require('./util');
 const tooltip = require('./tooltip');
 
 function borderBestProduct() {
@@ -89,7 +89,7 @@ function autoclickWhenBuffed() {
 }
 
 function cookieInfo() {
-  let eleInfo = utils.getFirstElementByClassName(document, 'cookie-info');
+  let eleInfo = util.getFirstElementByClassName(document, 'cookie-info');
   if (eleInfo === null) {
     eleInfo = document.createElement('div');
     eleInfo.classList.add('cookie-info');
@@ -107,10 +107,10 @@ function cookieInfo() {
     eleCookies.parentElement.insertBefore(eleInfo, eleCookies.nextSibling);
   }
 
-  const wrinklerCookies = utils.getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
+  const wrinklerCookies = util.getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
 
   return setInterval(() => {
-    wrinklerCookies.innerHTML = `Wrinkler Yield: ${utils.toNumberStr(Game.wrinklers[0].sucked)} cookies`;
+    wrinklerCookies.innerHTML = `Wrinkler Yield: ${util.toNumberStr(Game.wrinklers[0].sucked)} cookies`;
   }, 200);
 }
 

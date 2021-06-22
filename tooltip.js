@@ -1,10 +1,10 @@
-const utils = require('./utils');
+const util = require('./util');
 
 const tooltipHooks = [];
 
 function tooltipHook() {
   const tooltip = document.getElementById('tooltip');
-  return utils.elementMutationObserver(tooltip, () => {
+  return util.elementMutationObserver(tooltip, () => {
     let modified = 0;
     for (const hook of tooltipHooks) {
       if (hook(tooltip)) {
@@ -17,8 +17,8 @@ function tooltipHook() {
 
 function ascendTooltipHook() {
   const tooltip = document.getElementById('ascendTooltip');
-  return utils.elementMutationObserver(tooltip, () => {
-    let eleRemainingTime = utils.getFirstElementByClassName(tooltip, 'remaining-time');
+  return util.elementMutationObserver(tooltip, () => {
+    let eleRemainingTime = util.getFirstElementByClassName(tooltip, 'remaining-time');
     if (eleRemainingTime === null) {
       eleRemainingTime = document.createElement('span');
       eleRemainingTime.classList.add('remaining-time');
@@ -29,8 +29,8 @@ function ascendTooltipHook() {
     for (const b of tooltip.getElementsByTagName('b')) {
       const match = b.innerHTML.match(/^(.+) more cookies$/);
       if (match != null) {
-        eleRemainingTime.innerHTML = utils.secondsToStr(
-          Math.trunc(utils.toNumber(match[1]) / Game.cookiesPs),
+        eleRemainingTime.innerHTML = util.secondsToStr(
+          Math.trunc(util.toNumber(match[1]) / Game.cookiesPs),
         );
         break;
       }
@@ -40,12 +40,12 @@ function ascendTooltipHook() {
 }
 
 function tooltipPriceInTime(tooltip) {
-  const elePrice = utils.getFirstElementByClassName(tooltip, 'price');
+  const elePrice = util.getFirstElementByClassName(tooltip, 'price');
   if (elePrice === null || elePrice.classList.contains('lump')) {
     return false;
   }
 
-  const price = utils.toNumber(elePrice.innerHTML);
+  const price = util.toNumber(elePrice.innerHTML);
   const parent = elePrice.parentElement;
 
   for (const small of parent.getElementsByTagName('small')) {
@@ -57,7 +57,7 @@ function tooltipPriceInTime(tooltip) {
     }
   }
 
-  let elePriceTime = utils.getFirstElementByClassName(tooltip, 'price-time');
+  let elePriceTime = util.getFirstElementByClassName(tooltip, 'price-time');
   if (elePriceTime === null) {
     elePriceTime = document.createElement('span');
     elePriceTime.classList.add('price-time');
@@ -67,20 +67,20 @@ function tooltipPriceInTime(tooltip) {
     parent.appendChild(elePriceTime);
   }
 
-  elePriceTime.innerHTML = utils.secondsToStr(Math.trunc(price / Game.cookiesPs));
+  elePriceTime.innerHTML = util.secondsToStr(Math.trunc(price / Game.cookiesPs));
 
-  const data = utils.getFirstElementByClassName(tooltip, 'data');
+  const data = util.getFirstElementByClassName(tooltip, 'data');
   if (data === null) {
     return true;
   }
 
-  const bold = utils.getFirstElementByTagName(data, 'b');
-  const production = utils.toNumber(bold.innerHTML);
+  const bold = util.getFirstElementByTagName(data, 'b');
+  const production = util.toNumber(bold.innerHTML);
   if (Number.isNaN(production)) {
     return true;
   }
 
-  let eleCostRatio = utils.getFirstElementByClassName(tooltip, 'cost-ratio');
+  let eleCostRatio = util.getFirstElementByClassName(tooltip, 'cost-ratio');
   if (eleCostRatio === null) {
     eleCostRatio = document.createElement('span');
     eleCostRatio.classList.add('cost-ratio');
@@ -118,7 +118,7 @@ function tooltipMagicRefillTime(tooltip) {
       continue;
     }
 
-    let eleRefillTime = utils.getFirstElementByClassName(tooltip, 'refill-time');
+    let eleRefillTime = util.getFirstElementByClassName(tooltip, 'refill-time');
     if (eleRefillTime === null) {
       const line = document.createElement('div');
       line.classList.add('line');
@@ -129,7 +129,7 @@ function tooltipMagicRefillTime(tooltip) {
       div.appendChild(eleRefillTime);
     }
 
-    eleRefillTime.innerHTML = 'Refills in ' + utils.secondsToStr(Math.trunc(remainingTime));
+    eleRefillTime.innerHTML = 'Refills in ' + util.secondsToStr(Math.trunc(remainingTime));
     return true;
   }
   return false;
