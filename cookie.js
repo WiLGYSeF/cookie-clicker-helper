@@ -2,6 +2,9 @@
 
 // TODO: Game.cookiesPs does not take into account wrinklers
 // TODO: autoclickWhenBuffed() does not know if buff times change
+// TODO: wrinkler tooltip with cookie count
+
+// TODO: work on new game
 
 function getFirstElementByTagName(element, name) {
   const elements = element.getElementsByTagName(name);
@@ -13,37 +16,49 @@ function getFirstElementByClassName(element, name) {
   return elements.length !== 0 ? elements[0] : null;
 }
 
+var numberStrMap = {
+  million: 1e6,
+  billion: 1e9,
+  trillion: 1e12,
+  quadrillion: 1e15,
+  quintillion: 1e18,
+  sextillion: 1e21,
+  septillion: 1e24,
+  octillion: 1e27,
+  nonillion: 1e30,
+  decillion: 1e33,
+  undecillion: 1e36,
+  duodecillion: 1e39,
+  tredecillion: 1e42,
+  quattuordecillion: 1e45,
+  quindecillion: 1e48,
+  sexdecillion: 1e51,
+  septendecillion: 1e54,
+  octodecillion: 1e57,
+  novemdecillion: 1e60,
+  vigintillion: 1e63,
+};
+
 function toNumber(val) {
   const parts = val.replace(/,/g, '').split(' ');
-  const multiplier = {
-    million: 1e6,
-    billion: 1e9,
-    trillion: 1e12,
-    quadrillion: 1e15,
-    quintillion: 1e18,
-    sextillion: 1e21,
-    septillion: 1e24,
-    octillion: 1e27,
-    nonillion: 1e30,
-    decillion: 1e33,
-    undecillion: 1e36,
-    duodecillion: 1e39,
-    tredecillion: 1e42,
-    quattuordecillion: 1e45,
-    quindecillion: 1e48,
-    sexdecillion: 1e51,
-    septendecillion: 1e54,
-    octodecillion: 1e57,
-    novemdecillion: 1e60,
-    vigintillion: 1e63,
-  };
 
   if (parts.length === 1) {
     return parseInt(parts[0], 10);
   } if (parts.length === 2) {
-    return parseFloat(parts[0]) * multiplier[parts[1]];
+    return parseFloat(parts[0]) * numberStrMap[parts[1]];
   }
   return NaN;
+}
+
+function toNumberStr(val) {
+  const keys = Object.keys(numberStrMap);
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const mult = numberStrMap[keys[i]];
+    if (mult < val) {
+      return `${val / mult} ${keys[i]}`;
+    }
+  }
+  return val;
 }
 
 function secondsToStr(seconds) {
