@@ -57,12 +57,7 @@ function cookieInfo() {
 
 tooltip.modifyTooltips();
 
-var bbp = borderBestProduct();
-var acgc = autoclick.autoclickGoldenCookies(true);
-var acwb = autoclick.autoclickWhenBuffed();
-var ci = cookieInfo();
-
-// clearInterval(bbp);
-// clearInterval(acgc);
-// clearInterval(acwb);
-// clearInterval(ci);
+borderBestProduct();
+autoclick.autoclickGoldenCookies(true);
+autoclick.autoclickWhenBuffed();
+cookieInfo();
