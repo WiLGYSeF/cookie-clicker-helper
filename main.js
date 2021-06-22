@@ -5,86 +5,7 @@
 
 // TODO: work on new game
 
-// TODO: webpack
-
-function getFirstElementByTagName(element, name) {
-  const elements = element.getElementsByTagName(name);
-  return elements.length !== 0 ? elements[0] : null;
-}
-
-function getFirstElementByClassName(element, name) {
-  const elements = element.getElementsByClassName(name);
-  return elements.length !== 0 ? elements[0] : null;
-}
-
-var numberStrMap = {
-  million: 1e6,
-  billion: 1e9,
-  trillion: 1e12,
-  quadrillion: 1e15,
-  quintillion: 1e18,
-  sextillion: 1e21,
-  septillion: 1e24,
-  octillion: 1e27,
-  nonillion: 1e30,
-  decillion: 1e33,
-  undecillion: 1e36,
-  duodecillion: 1e39,
-  tredecillion: 1e42,
-  quattuordecillion: 1e45,
-  quindecillion: 1e48,
-  sexdecillion: 1e51,
-  septendecillion: 1e54,
-  octodecillion: 1e57,
-  novemdecillion: 1e60,
-  vigintillion: 1e63,
-};
-
-function toNumber(val) {
-  const parts = val.replace(/,/g, '').split(' ');
-
-  if (parts.length === 1) {
-    return parseInt(parts[0], 10);
-  } if (parts.length === 2) {
-    return parseFloat(parts[0]) * numberStrMap[parts[1]];
-  }
-  return NaN;
-}
-
-function toNumberStr(val) {
-  const keys = Object.keys(numberStrMap);
-  for (let i = keys.length - 1; i >= 0; i--) {
-    const mult = numberStrMap[keys[i]];
-    if (mult < val) {
-      return `${(val / mult).toFixed(3)} ${keys[i]}`;
-    }
-  }
-  return val;
-}
-
-function secondsToStr(seconds) {
-  let sec = seconds;
-  let str = '';
-  if (sec >= 86400) {
-    str += `${Math.trunc(sec / 86400)}d `;
-    sec %= 86400;
-  }
-  if (sec >= 3600) {
-    str += `${Math.trunc(sec / 3600)}h `;
-    sec %= 3600;
-  }
-  if (sec >= 60) {
-    str += `${Math.trunc(sec / 60)}m `;
-    sec %= 60;
-  }
-  if (sec > 0) {
-    str += `${sec}s `;
-  }
-  if (sec === 0 && str.length === 0) {
-    str = '0s ';
-  }
-  return str.length === 0 ? '' : str.substring(0, str.length - 1);
-}
+const utils = require('./utils');
 
 function borderBestProduct() {
   return setInterval(() => {
@@ -108,39 +29,9 @@ function borderBestProduct() {
 
 var _tooltipHooks = [];
 
-function elementMutationObserver(element, callback) {
-  let skip = 0;
-
-  const observer = new MutationObserver((mutationsList, obs) => {
-    if (skip > 0) {
-      skip--;
-      return;
-    }
-
-    let modified = 0;
-
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        if (callback()) {
-          modified++;
-        }
-      }
-    }
-
-    if (modified > 0) {
-      skip++;
-    }
-  });
-  observer.observe(element, {
-    childList: true,
-    subtree: true,
-  });
-  return observer;
-}
-
 function tooltipHook() {
   const tooltip = document.getElementById('tooltip');
-  return elementMutationObserver(tooltip, () => {
+  return utils.elementMutationObserver(tooltip, () => {
     let modified = 0;
     for (const hook of _tooltipHooks) {
       if (hook(tooltip)) {
@@ -153,8 +44,8 @@ function tooltipHook() {
 
 function ascendTooltipHook() {
   const tooltip = document.getElementById('ascendTooltip');
-  return elementMutationObserver(tooltip, () => {
-    let eleRemainingTime = getFirstElementByClassName(tooltip, 'remaining-time');
+  return utils.elementMutationObserver(tooltip, () => {
+    let eleRemainingTime = utils.getFirstElementByClassName(tooltip, 'remaining-time');
     if (eleRemainingTime === null) {
       eleRemainingTime = document.createElement('span');
       eleRemainingTime.classList.add('remaining-time');
@@ -165,8 +56,8 @@ function ascendTooltipHook() {
     for (const b of tooltip.getElementsByTagName('b')) {
       const match = b.innerHTML.match(/^(.+) more cookies$/);
       if (match != null) {
-        eleRemainingTime.innerHTML = secondsToStr(
-          Math.trunc(toNumber(match[1]) / Game.cookiesPs),
+        eleRemainingTime.innerHTML = utils.secondsToStr(
+          Math.trunc(utils.toNumber(match[1]) / Game.cookiesPs),
         );
         break;
       }
@@ -176,12 +67,12 @@ function ascendTooltipHook() {
 }
 
 function tooltipPriceInTime(tooltip) {
-  const elePrice = getFirstElementByClassName(tooltip, 'price');
+  const elePrice = utils.getFirstElementByClassName(tooltip, 'price');
   if (elePrice === null || elePrice.classList.contains('lump')) {
     return false;
   }
 
-  const price = toNumber(elePrice.innerHTML);
+  const price = utils.toNumber(elePrice.innerHTML);
   const parent = elePrice.parentElement;
 
   for (const small of parent.getElementsByTagName('small')) {
@@ -193,7 +84,7 @@ function tooltipPriceInTime(tooltip) {
     }
   }
 
-  let elePriceTime = getFirstElementByClassName(tooltip, 'price-time');
+  let elePriceTime = utils.getFirstElementByClassName(tooltip, 'price-time');
   if (elePriceTime === null) {
     elePriceTime = document.createElement('span');
     elePriceTime.classList.add('price-time');
@@ -203,20 +94,20 @@ function tooltipPriceInTime(tooltip) {
     parent.appendChild(elePriceTime);
   }
 
-  elePriceTime.innerHTML = secondsToStr(Math.trunc(price / Game.cookiesPs));
+  elePriceTime.innerHTML = utils.secondsToStr(Math.trunc(price / Game.cookiesPs));
 
-  const data = getFirstElementByClassName(tooltip, 'data');
+  const data = utils.getFirstElementByClassName(tooltip, 'data');
   if (data === null) {
     return true;
   }
 
-  const bold = getFirstElementByTagName(data, 'b');
-  const production = toNumber(bold.innerHTML);
+  const bold = utils.getFirstElementByTagName(data, 'b');
+  const production = utils.toNumber(bold.innerHTML);
   if (Number.isNaN(production)) {
     return true;
   }
 
-  let eleCostRatio = getFirstElementByClassName(tooltip, 'cost-ratio');
+  let eleCostRatio = utils.getFirstElementByClassName(tooltip, 'cost-ratio');
   if (eleCostRatio === null) {
     eleCostRatio = document.createElement('span');
     eleCostRatio.classList.add('cost-ratio');
@@ -254,7 +145,7 @@ function tooltipMagicRefillTime(tooltip) {
       continue;
     }
 
-    let eleRefillTime = getFirstElementByClassName(tooltip, 'refill-time');
+    let eleRefillTime = utils.getFirstElementByClassName(tooltip, 'refill-time');
     if (eleRefillTime === null) {
       const line = document.createElement('div');
       line.classList.add('line');
@@ -265,7 +156,7 @@ function tooltipMagicRefillTime(tooltip) {
       div.appendChild(eleRefillTime);
     }
 
-    eleRefillTime.innerHTML = 'Refills in ' + secondsToStr(Math.trunc(remainingTime));
+    eleRefillTime.innerHTML = 'Refills in ' + utils.secondsToStr(Math.trunc(remainingTime));
     return true;
   }
   return false;
@@ -332,7 +223,7 @@ function autoclickWhenBuffed() {
 }
 
 function cookieInfo() {
-  let eleInfo = getFirstElementByClassName(document, 'cookie-info');
+  let eleInfo = utils.getFirstElementByClassName(document, 'cookie-info');
   if (eleInfo === null) {
     eleInfo = document.createElement('div');
     eleInfo.classList.add('cookie-info');
@@ -350,10 +241,10 @@ function cookieInfo() {
     eleCookies.parentElement.insertBefore(eleInfo, eleCookies.nextSibling);
   }
 
-  const wrinklerCookies = getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
+  const wrinklerCookies = utils.getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
 
   return setInterval(() => {
-    wrinklerCookies.innerHTML = `Wrinkler Yield: ${toNumberStr(Game.wrinklers[0].sucked)} cookies`;
+    wrinklerCookies.innerHTML = `Wrinkler Yield: ${utils.toNumberStr(Game.wrinklers[0].sucked)} cookies`;
   }, 200);
 }
 

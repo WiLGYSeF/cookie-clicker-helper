@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-airbnb-base": "^14.2.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.40.0",
+    "webpack-cli": "^4.7.2"
+  }
+}
