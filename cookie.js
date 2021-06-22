@@ -2,9 +2,10 @@
 
 // TODO: Game.cookiesPs does not take into account wrinklers
 // TODO: autoclickWhenBuffed() does not know if buff times change
-// TODO: wrinkler tooltip with cookie count
 
 // TODO: work on new game
+
+// TODO: webpack
 
 function getFirstElementByTagName(element, name) {
   const elements = element.getElementsByTagName(name);
@@ -55,7 +56,7 @@ function toNumberStr(val) {
   for (let i = keys.length - 1; i >= 0; i--) {
     const mult = numberStrMap[keys[i]];
     if (mult < val) {
-      return `${val / mult} ${keys[i]}`;
+      return `${(val / mult).toFixed(3)} ${keys[i]}`;
     }
   }
   return val;
@@ -330,6 +331,32 @@ function autoclickWhenBuffed() {
   }, 1000);
 }
 
+function cookieInfo() {
+  let eleInfo = getFirstElementByClassName(document, 'cookie-info');
+  if (eleInfo === null) {
+    eleInfo = document.createElement('div');
+    eleInfo.classList.add('cookie-info');
+    eleInfo.style.position = 'absolute';
+    eleInfo.style.width = '100%';
+    eleInfo.style.background = 'rgba(0, 0, 0, 0.4)';
+    eleInfo.style.fontWeight = 'bold';
+    eleInfo.style.textAlign = 'center';
+
+    const wrinklerCookies = document.createElement('p');
+    wrinklerCookies.classList.add('wrinkler-cookies');
+    eleInfo.appendChild(wrinklerCookies);
+
+    const eleCookies = document.getElementById('cookies');
+    eleCookies.parentElement.insertBefore(eleInfo, eleCookies.nextSibling);
+  }
+
+  const wrinklerCookies = getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
+
+  return setInterval(() => {
+    wrinklerCookies.innerHTML = `Wrinkler Yield: ${toNumberStr(Game.wrinklers[0].sucked)} cookies`;
+  }, 200);
+}
+
 _tooltipHooks.push(tooltipPriceInTime);
 _tooltipHooks.push(tooltipMagicRefillTime);
 
@@ -338,9 +365,11 @@ var tthook = tooltipHook();
 var atthook = ascendTooltipHook();
 var acgc = autoclickGoldenCookies(true);
 var acwb = autoclickWhenBuffed();
+var ci = cookieInfo();
 
 // clearInterval(bbp);
 // tthook.disconnect();
 // atthook.disconnect();
 // clearInterval(acgc);
 // clearInterval(acwb);
+// clearInterval(ci);
