@@ -3,11 +3,10 @@
 // TODO: Game.cookiesPs does not take into account wrinklers
 // TODO: autoclickWhenBuffed() does not know if buff times change
 
-// TODO: work on new game
-
 const autoclick = require('./autoclick');
 const building = require('./building');
 const tooltip = require('./tooltip');
+const upgrade = require('./upgrade');
 const util = require('./util');
 
 function cookieInfo() {
@@ -39,6 +38,8 @@ function cookieInfo() {
 tooltip.modifyTooltips();
 
 building.borderBestProduct();
+upgrade.borderBestUpgrade();
+
 autoclick.autoclickGoldenCookies(true);
 autoclick.autoclickWhenBuffed();
 cookieInfo();
