@@ -83,28 +83,29 @@ function toNumberStr(val) {
   return val;
 }
 
+const UNITS = [
+  [31536000, 'y'],
+  [86400, 'd'],
+  [3600, 'h'],
+  [60, 'm'],
+  [1, 's'],
+];
+
 function secondsToStr(seconds) {
   let sec = seconds;
   let str = '';
-  if (sec >= 86400) {
-    str += `${Math.trunc(sec / 86400)}d `;
-    sec %= 86400;
+  let count = 0;
+  for (const unit of UNITS) {
+    if (sec >= unit[0]) {
+      str += `${Math.trunc(sec / unit[0])}${unit[1]} `;
+      sec %= unit[0];
+      count++;
+    }
+    if (count === 3) {
+      break;
+    }
   }
-  if (sec >= 3600) {
-    str += `${Math.trunc(sec / 3600)}h `;
-    sec %= 3600;
-  }
-  if (sec >= 60) {
-    str += `${Math.trunc(sec / 60)}m `;
-    sec %= 60;
-  }
-  if (sec > 0) {
-    str += `${sec}s `;
-  }
-  if (sec === 0 && str.length === 0) {
-    str = '0s ';
-  }
-  return str.length === 0 ? '' : str.substring(0, str.length - 1);
+  return str.length === 0 ? '0s' : str.substring(0, str.length - 1);
 }
 
 module.exports = {

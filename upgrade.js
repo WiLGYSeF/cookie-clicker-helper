@@ -1,12 +1,30 @@
-function getAvailableUpgrades() {
+function getUpgradeElements() {
   const eleUpgrades = document.getElementById('upgrades');
-  const upgrades = [];
+  const eleTechUpgrades = document.getElementById('techUpgrades');
+  const elements = [];
 
-  for (const div of eleUpgrades.getElementsByClassName('upgrade')) {
+  elements.push(...eleUpgrades.getElementsByClassName('upgrade'));
+  elements.push(...eleTechUpgrades.getElementsByClassName('upgrade'));
+  return elements;
+}
+
+function getAvailableUpgrades() {
+  const upgrades = [];
+  for (const div of getUpgradeElements()) {
     const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
     upgrades.push(Game.UpgradesById[parseInt(match[1], 10)]);
   }
   return upgrades;
+}
+
+function getUpgradeElement(upgrade) {
+  for (const div of getUpgradeElements()) {
+    const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
+    if (match && parseInt(match[1], 10) === upgrade.id) {
+      return div;
+    }
+  }
+  return null;
 }
 
 function getUpgradeEffect(upgrade) {
@@ -32,18 +50,14 @@ function getUpgradeEffect(upgrade) {
     // TODO: figure out milk to cookies calculation
     // return Game.milkProgress;
   }
-  return undefined;
-}
 
-function getUpgradeElement(upgrade) {
-  const eleUpgrades = document.getElementById('upgrades');
-  for (const div of eleUpgrades.getElementsByClassName('upgrade')) {
-    const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
-    if (parseInt(match[1], 10) === upgrade.id) {
-      return div;
+  if (upgrade.pool === 'tech') {
+    const match = upgrade.desc.match(new RegExp('Cookie production multiplier <b>\\+(\\d+)%</b>'));
+    if (match) {
+      return Game.cookiesPs * (parseInt(match[1], 10) / 100);
     }
   }
-  return null;
+  return undefined;
 }
 
 function borderBestUpgrade() {
