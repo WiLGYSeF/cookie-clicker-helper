@@ -1,3 +1,5 @@
+// TODO: upgrade tooltip value
+
 const util = require('./util');
 
 const tooltipHooks = [];
