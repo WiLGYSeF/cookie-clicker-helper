@@ -6,28 +6,9 @@
 // TODO: work on new game
 
 const autoclick = require('./autoclick');
-const util = require('./util');
+const building = require('./building');
 const tooltip = require('./tooltip');
-
-function borderBestProduct() {
-  return setInterval(() => {
-    const products = Game.ObjectsById.filter(
-      (x) => !x.locked,
-    ).map(
-      (x) => [x, x.cps(x) / x.price],
-    );
-    products.sort((a, b) => b[1] - a[1]);
-
-    const colors = ['#00ff00', '#ffff00'];
-    let cidx = 0;
-
-    for (const productpair of products) {
-      const product = document.getElementById(`product${productpair[0].id}`);
-      product.style.border = cidx === colors.length ? '' : `1px solid ${colors[cidx++]}`;
-      product.style.boxSizing = 'border-box';
-    }
-  }, 250);
-}
+const util = require('./util');
 
 function cookieInfo() {
   let eleInfo = util.getFirstElementByClassName(document, 'cookie-info');
@@ -57,7 +38,7 @@ function cookieInfo() {
 
 tooltip.modifyTooltips();
 
-borderBestProduct();
+building.borderBestProduct();
 autoclick.autoclickGoldenCookies(true);
 autoclick.autoclickWhenBuffed();
 cookieInfo();
