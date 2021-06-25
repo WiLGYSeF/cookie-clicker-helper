@@ -106,4 +106,8 @@ function borderBestUpgrade() {
 
 module.exports = {
   borderBestUpgrade,
+  getAvailableUpgrades,
+  getUpgradeEffect,
+  getUpgradeElement,
+  getUpgradeElements,
 };
