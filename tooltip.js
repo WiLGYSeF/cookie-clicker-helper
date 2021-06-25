@@ -73,9 +73,10 @@ function tooltipPriceInTime(tooltip) {
   const tag = util.getFirstElementByClassName(tooltip, 'tag');
   let production;
   if (tag && tag.innerHTML.match(/Upgrade|Cookie|Tech/)) {
-    production = upgrade.getUpgradeEffect(
-      Game.Upgrades[util.getFirstElementByClassName(tooltip, 'name').innerHTML],
-    );
+    const upg = Game.Upgrades[util.getFirstElementByClassName(tooltip, 'name').innerHTML];
+    if (upg) { // TODO: fix some names not being correct
+      production = upgrade.getUpgradeEffect(upg);
+    }
   } else {
     const data = util.getFirstElementByClassName(tooltip, 'data');
     if (data === null) {
