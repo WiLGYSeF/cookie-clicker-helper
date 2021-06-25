@@ -1,5 +1,4 @@
-// TODO: upgrade tooltip value
-
+const upgrade = require('./upgrade');
 const util = require('./util');
 
 const tooltipHooks = [];
@@ -71,14 +70,23 @@ function tooltipPriceInTime(tooltip) {
 
   elePriceTime.innerHTML = util.secondsToStr(Math.trunc(price / Game.cookiesPs));
 
-  const data = util.getFirstElementByClassName(tooltip, 'data');
-  if (data === null) {
-    return true;
+  const tag = util.getFirstElementByClassName(tooltip, 'tag');
+  let production;
+  if (tag && tag.innerHTML.match(/Upgrade|Cookie|Tech/)) {
+    production = upgrade.getUpgradeEffect(
+      Game.Upgrades[util.getFirstElementByClassName(tooltip, 'name').innerHTML],
+    );
+  } else {
+    const data = util.getFirstElementByClassName(tooltip, 'data');
+    if (data === null) {
+      return true;
+    }
+    const bold = util.getFirstElementByTagName(data, 'b');
+    production = util.toNumber(bold.innerHTML);
   }
 
-  const bold = util.getFirstElementByTagName(data, 'b');
-  const production = util.toNumber(bold.innerHTML);
-  if (Number.isNaN(production)) {
+  /* eslint-disable-next-line no-restricted-globals */
+  if (isNaN(production)) {
     return true;
   }
 

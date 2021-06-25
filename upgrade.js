@@ -1,12 +1,30 @@
-function getAvailableUpgrades() {
+function getUpgradeElements() {
   const eleUpgrades = document.getElementById('upgrades');
-  const upgrades = [];
+  const eleTechUpgrades = document.getElementById('techUpgrades');
+  const elements = [];
 
-  for (const div of eleUpgrades.getElementsByClassName('upgrade')) {
+  elements.push(...eleUpgrades.getElementsByClassName('upgrade'));
+  elements.push(...eleTechUpgrades.getElementsByClassName('upgrade'));
+  return elements;
+}
+
+function getAvailableUpgrades() {
+  const upgrades = [];
+  for (const div of getUpgradeElements()) {
     const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
     upgrades.push(Game.UpgradesById[parseInt(match[1], 10)]);
   }
   return upgrades;
+}
+
+function getUpgradeElement(upgrade) {
+  for (const div of getUpgradeElements()) {
+    const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
+    if (match && parseInt(match[1], 10) === upgrade.id) {
+      return div;
+    }
+  }
+  return null;
 }
 
 function getUpgradeEffect(upgrade) {
@@ -32,18 +50,33 @@ function getUpgradeEffect(upgrade) {
     // TODO: figure out milk to cookies calculation
     // return Game.milkProgress;
   }
-  return undefined;
-}
 
-function getUpgradeElement(upgrade) {
-  const eleUpgrades = document.getElementById('upgrades');
-  for (const div of eleUpgrades.getElementsByClassName('upgrade')) {
-    const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
-    if (parseInt(match[1], 10) === upgrade.id) {
-      return div;
+  // Thousand fingers upgrades
+  const multGain1000FingersMatch = (
+    upgrade.name === 'Thousand fingers' ? [null, '1'] : upgrade.desc.match(new RegExp(
+      'Multiplies the gain from Thousand fingers by <b>(\\d+)</b>',
+    ))
+  );
+  if (multGain1000FingersMatch) {
+    // TODO: factor in clicking for calculation
+    const cursors = Game.Objects.Cursor.amount;
+    const nonCursorBuildings = Game.BuildingsOwned - cursors;
+    return nonCursorBuildings * (cursors / 100) * parseInt(multGain1000FingersMatch[1], 10);
+  }
+
+  if (upgrade.desc.includes('The mouse and cursors are ')) {
+    // TODO: factor in clicking for calculation
+    const cursor = Game.Objects.Cursor;
+    return cursor.cps(cursor) * cursor.amount;
+  }
+
+  if (upgrade.pool === 'tech') {
+    const match = upgrade.desc.match(new RegExp('Cookie production multiplier <b>\\+(\\d+)%</b>'));
+    if (match) {
+      return Game.cookiesPs * (parseInt(match[1], 10) / 100);
     }
   }
-  return null;
+  return undefined;
 }
 
 function borderBestUpgrade() {
@@ -72,4 +105,8 @@ function borderBestUpgrade() {
 
 module.exports = {
   borderBestUpgrade,
+  getAvailableUpgrades,
+  getUpgradeEffect,
+  getUpgradeElement,
+  getUpgradeElements,
 };
