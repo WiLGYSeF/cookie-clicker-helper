@@ -51,6 +51,26 @@ function getUpgradeEffect(upgrade) {
     // return Game.milkProgress;
   }
 
+  // Thousand fingers upgrade
+  if (upgrade.name === 'Thousand fingers') {
+    const cursors = Game.Objects.Cursor.amount;
+    const nonCursorBuildings = Game.BuildingsOwned - cursors;
+    return nonCursorBuildings * (cursors / 100);
+  }
+
+  // Thousand fingers upgrades
+  const multGain1000FingersMatch = (
+    upgrade.name === 'Thousand fingers' ? [null, '1'] : upgrade.desc.match(new RegExp(
+      'Multiplies the gain from Thousand fingers by <b>(\\d+)</b>',
+    ))
+  );
+  if (multGain1000FingersMatch) {
+    // TODO: factor in clicking for calculation
+    const cursors = Game.Objects.Cursor.amount;
+    const nonCursorBuildings = Game.BuildingsOwned - cursors;
+    return nonCursorBuildings * (cursors / 100) * parseInt(multGain1000FingersMatch[1], 10);
+  }
+
   if (upgrade.pool === 'tech') {
     const match = upgrade.desc.match(new RegExp('Cookie production multiplier <b>\\+(\\d+)%</b>'));
     if (match) {
