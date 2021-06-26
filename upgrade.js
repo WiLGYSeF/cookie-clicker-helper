@@ -44,11 +44,23 @@ function getUpgradeEffect(upgrade) {
   // clicking upgrade
   if (upgrade.desc.includes('Clicking')) {
     // TODO: figure out value of clicking
+    return undefined;
   }
   // kitten upgrade
   if (upgrade.kitten === 1) {
     // TODO: figure out milk to cookies calculation
     // return Game.milkProgress;
+    return undefined;
+  }
+
+  // bingo center research upgrades
+  if (upgrade.name === 'Ritual rolling pins') {
+    const grandmas = Game.Objects.Grandma;
+    return grandmas.cps(grandmas) * grandmas.amount;
+  }
+  if (upgrade.name === 'One mind') {
+    // TODO: calculate One mind
+    return undefined;
   }
 
   // Thousand fingers upgrades
