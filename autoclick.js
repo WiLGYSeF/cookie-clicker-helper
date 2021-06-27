@@ -24,6 +24,7 @@ function autoclickGoldenCookies(clickWrath = false) {
       if (
         shimmer.attributes.alt.nodeValue === 'Golden cookie'
         || (clickWrath && shimmer.attributes.alt.nodeValue === 'Wrath cookie')
+        || shimmer.attributes.alt.nodeValue === 'Reindeer'
       ) {
         shimmer.click();
       }
