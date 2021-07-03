@@ -1,3 +1,5 @@
+// TODO: easter eggs
+
 function getUpgradeElements() {
   const eleUpgrades = document.getElementById('upgrades');
   const eleTechUpgrades = document.getElementById('techUpgrades');
@@ -60,6 +62,10 @@ function getUpgradeEffect(upgrade) {
   }
   if (upgrade.name === 'One mind') {
     // TODO: calculate One mind
+    return undefined;
+  }
+  if (upgrade.name === 'Elder pact') {
+    // TODO: calculate Elder pact
     return undefined;
   }
 
