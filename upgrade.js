@@ -39,6 +39,12 @@ function getUpgradeEffect(upgrade) {
     const grandma = Game.Objects.Grandma;
     return grandma.cps(grandma) * grandma.amount;
   }
+
+  if (upgrade.name === 'Bingo center/Research facility') {
+    const grandma = Game.Objects.Grandma;
+    return 3 * grandma.cps(grandma) * grandma.amount;
+  }
+
   // cookie upgrade
   if (upgrade.pool === 'cookie') {
     // for valentine's cookies
