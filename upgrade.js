@@ -40,6 +40,17 @@ function getUpgradeEffect(upgrade) {
     return grandma.cps(grandma) * grandma.amount;
   }
 
+  // synergy upgrade
+  if (upgrade.buildingTie1 !== undefined && upgrade.buildingTie2 !== undefined) {
+    const matches = [...upgrade.desc.matchAll(new RegExp('<b>\\+([0-9.]+)% CpS</b>', 'g'))];
+    if (matches.length === 2) {
+      const b1 = upgrade.buildingTie1;
+      const b2 = upgrade.buildingTie2;
+      return b1.cps(b1) * matches[0][1] * b2.amount + b2.cps(b2) * matches[1][1] * b1.amount;
+    }
+    return undefined;
+  }
+
   if (upgrade.name === 'Bingo center/Research facility') {
     const grandma = Game.Objects.Grandma;
     return 3 * grandma.cps(grandma) * grandma.amount;
