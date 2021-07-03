@@ -41,6 +41,10 @@ function getUpgradeEffect(upgrade) {
   }
   // cookie upgrade
   if (upgrade.pool === 'cookie') {
+    // for valentine's cookies
+    if (typeof upgrade.power === 'function') {
+      return Game.cookiesPs * (upgrade.power() / 100);
+    }
     return Game.cookiesPs * (upgrade.power / 100);
   }
   // clicking upgrade
