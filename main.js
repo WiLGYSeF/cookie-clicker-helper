@@ -3,7 +3,6 @@
 // TODO: Game.cookiesPs does not take into account wrinklers
 // TODO: autoclickWhenBuffed() does not know if buff times change
 
-// TODO: fix wrinkler cookie display
 // TODO: fix "Infinityy"
 
 const autoclick = require('./autoclick');
@@ -34,8 +33,19 @@ function cookieInfo() {
 
   const wrinklerCookies = util.getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
 
+  let totalCookies = 0;
+  let wrinklerCount = 0;
+
+  for (const wrinkler of Game.wrinklers) {
+    totalCookies += wrinkler.sucked;
+    if (wrinkler.phase === 2) {
+      wrinklerCount++;
+    }
+  }
+
   return setInterval(() => {
-    wrinklerCookies.innerHTML = `Wrinkler Yield: ${util.toNumberStr(Game.wrinklers[0].sucked)} cookies`;
+    wrinklerCookies.innerHTML = `Wrinkler Yield: total ${util.toNumberStr(totalCookies)}`
+    + ` / avg ${util.toNumberStr(wrinklerCount !== 0 ? totalCookies / wrinklerCount : 0)} cookies`;
   }, 200);
 }
 
