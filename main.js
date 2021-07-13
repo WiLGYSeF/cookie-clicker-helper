@@ -3,8 +3,6 @@
 // TODO: Game.cookiesPs does not take into account wrinklers
 // TODO: autoclickWhenBuffed() does not know if buff times change
 
-// TODO: fix "Infinityy"
-
 const autoclick = require('./autoclick');
 const building = require('./building');
 const tooltip = require('./tooltip');

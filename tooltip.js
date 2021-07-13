@@ -109,6 +109,10 @@ function tooltipPriceInTime(tooltip) {
 
 function tooltipMagicRefillTime(tooltip) {
   const grimoireBarText = document.getElementById('grimoireBarText');
+  if (grimoireBarText == null) {
+    return false;
+  }
+
   const match = grimoireBarText.innerHTML.match(new RegExp(String.raw`^(\d+)/(\d+) \(\+([\d.]+)/s\)$`));
   if (match === null) {
     return false;

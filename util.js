@@ -65,7 +65,7 @@ function toNumber(val) {
   const parts = val.replace(/,/g, '').split(' ');
 
   if (parts.length === 1) {
-    return parseInt(parts[0], 10);
+    return parseFloat(parts[0], 10);
   } if (parts.length === 2) {
     return parseFloat(parts[0]) * numberStrMap[parts[1]];
   }
@@ -95,6 +95,11 @@ function secondsToStr(seconds) {
   let sec = seconds;
   let str = '';
   let count = 0;
+
+  if (!Number.isFinite(seconds)) {
+    return 'never';
+  }
+
   for (const unit of UNITS) {
     if (sec >= unit[0]) {
       str += `${Math.trunc(sec / unit[0])}${unit[1]} `;
