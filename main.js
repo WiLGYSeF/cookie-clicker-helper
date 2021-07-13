@@ -33,17 +33,17 @@ function cookieInfo() {
 
   const wrinklerCookies = util.getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
 
-  let totalCookies = 0;
-  let wrinklerCount = 0;
-
-  for (const wrinkler of Game.wrinklers) {
-    totalCookies += wrinkler.sucked;
-    if (wrinkler.phase === 2) {
-      wrinklerCount++;
-    }
-  }
-
   return setInterval(() => {
+    let totalCookies = 0;
+    let wrinklerCount = 0;
+
+    for (const wrinkler of Game.wrinklers) {
+      totalCookies += wrinkler.sucked;
+      if (wrinkler.phase === 2) {
+        wrinklerCount++;
+      }
+    }
+
     wrinklerCookies.innerHTML = `Wrinkler Yield: total ${util.toNumberStr(totalCookies)}`
     + ` / avg ${util.toNumberStr(wrinklerCount !== 0 ? totalCookies / wrinklerCount : 0)} cookies`;
   }, 200);
