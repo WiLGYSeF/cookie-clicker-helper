@@ -3,7 +3,19 @@
 Helps you play cookie clicker by giving information on purchases.
 Will also click golden cookies for you.
 
-## Features
+# Usage
+
+1. Install npm dependencies:
+  ```bash
+  npm install
+  ```
+2. Webpack the scripts:
+  ```bash
+  npm run build
+  ```
+3. Copy the contents of `dist/cookie.js` into the web console.
+
+# Features
 - Highlights most cost-efficient buildings and upgrades in order of green, yellow, and orange.
   - Blue highlights mean that the helper does not know how effective the purchase is.
 - Adds a cost in time to the buying buildings and upgrades tooltip using raw cookies per second.
