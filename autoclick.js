@@ -1,3 +1,5 @@
+const util = require('./util');
+
 let autoclicking = 0;
 
 function autoclick(duration) {
@@ -59,9 +61,20 @@ function autoclickWhenBuffed() {
   }, 1000);
 }
 
+function autoclickFortune() {
+  const eleCommentsText = document.getElementById('commentsText');
+  return setInterval(() => {
+    const fortune = util.getFirstElementByClassName(eleCommentsText, 'fortune');
+    if (fortune !== null) {
+      fortune.click();
+    }
+  }, 1000);
+}
+
 module.exports = {
   autoclick,
   isAutoclicking,
   autoclickGoldenCookies,
   autoclickWhenBuffed,
+  autoclickFortune,
 };

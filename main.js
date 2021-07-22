@@ -54,4 +54,5 @@ upgrade.borderBestUpgrade();
 
 autoclick.autoclickGoldenCookies(true);
 autoclick.autoclickWhenBuffed();
+autoclick.autoclickFortune();
 cookieInfo();
