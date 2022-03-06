@@ -1,16 +1,21 @@
 // https://orteil.dashnet.org/cookieclicker/
 
-// TODO: Game.cookiesPs does not take into account wrinklers
-// TODO: autoclickWhenBuffed() does not know if buff times change
+// TODO: garden harvest
 
-const autoclick = require('./autoclick');
-const building = require('./building');
-const tooltip = require('./tooltip');
-const upgrade = require('./upgrade');
-const util = require('./util');
+// TODO: Game.cookiesPs does not take into account wrinklers
+// TODO: sugar lump click?
+
+import { autoclickFortune, autoclickGoldenCookies, autoclickWhenBuffed } from './autoclick';
+import { highlightBestProduct } from './building';
+import { harvestEol } from './garden';
+import { modifyTooltips } from './tooltip';
+import { highlightBestUpgrade } from './upgrade';
+import { toNumberStr } from './util';
+
+declare const Game: CookieClicker.Game;
 
 function cookieInfo() {
-  let eleInfo = util.getFirstElementByClassName(document, 'cookie-info');
+  let eleInfo = document.querySelector('.cookie-info') as HTMLElement;
   if (eleInfo === null) {
     eleInfo = document.createElement('div');
     eleInfo.classList.add('cookie-info');
@@ -19,7 +24,7 @@ function cookieInfo() {
     eleInfo.style.background = 'rgba(0, 0, 0, 0.4)';
     eleInfo.style.fontWeight = 'bold';
     eleInfo.style.textAlign = 'center';
-    eleInfo.style.zIndex = 5;
+    eleInfo.style.zIndex = '5';
 
     const wrinklerCookies = document.createElement('p');
     wrinklerCookies.classList.add('wrinkler-cookies');
@@ -29,7 +34,7 @@ function cookieInfo() {
     eleCookies.parentElement.insertBefore(eleInfo, eleCookies.nextSibling);
   }
 
-  const wrinklerCookies = util.getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
+  const wrinklerCookies = eleInfo.querySelector('.wrinkler-cookies');
 
   return setInterval(() => {
     let totalCookies = 0;
@@ -42,17 +47,19 @@ function cookieInfo() {
       }
     }
 
-    wrinklerCookies.innerHTML = `Wrinkler Yield: total ${util.toNumberStr(totalCookies)}`
-    + ` / avg ${util.toNumberStr(wrinklerCount !== 0 ? totalCookies / wrinklerCount : 0)} cookies`;
+    wrinklerCookies.innerHTML = `Wrinkler Yield: total ${toNumberStr(totalCookies)}`
+    + ` / avg ${toNumberStr(wrinklerCount !== 0 ? totalCookies / wrinklerCount : 0)} cookies`;
   }, 200);
 }
 
-tooltip.modifyTooltips();
+modifyTooltips();
 
-building.borderBestProduct();
-upgrade.borderBestUpgrade();
+highlightBestProduct();
+highlightBestUpgrade();
 
-autoclick.autoclickGoldenCookies(true);
-autoclick.autoclickWhenBuffed();
-autoclick.autoclickFortune();
+// harvestEOL();
+
+autoclickGoldenCookies(true);
+autoclickWhenBuffed();
+autoclickFortune();
 cookieInfo();

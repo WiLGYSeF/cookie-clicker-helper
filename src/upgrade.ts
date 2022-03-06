@@ -1,16 +1,18 @@
 // TODO: easter eggs
 
-function getUpgradeElements() {
+declare const Game: CookieClicker.Game;
+
+export function getUpgradeElements(): HTMLElement[] {
   const eleUpgrades = document.getElementById('upgrades');
   const eleTechUpgrades = document.getElementById('techUpgrades');
-  const elements = [];
+  const elements: HTMLElement[] = [];
 
-  elements.push(...eleUpgrades.getElementsByClassName('upgrade'));
-  elements.push(...eleTechUpgrades.getElementsByClassName('upgrade'));
+  elements.push(...eleUpgrades.getElementsByClassName('upgrade') as unknown as HTMLElement[]);
+  elements.push(...eleTechUpgrades.getElementsByClassName('upgrade') as unknown as HTMLElement[]);
   return elements;
 }
 
-function getAvailableUpgrades() {
+export function getAvailableUpgrades() {
   const upgrades = [];
   for (const div of getUpgradeElements()) {
     const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
@@ -19,7 +21,7 @@ function getAvailableUpgrades() {
   return upgrades;
 }
 
-function getUpgradeElement(upgrade) {
+export function getUpgradeElement(upgrade: CookieClicker.Upgrade) {
   for (const div of getUpgradeElements()) {
     const match = div.onclick.toString().match(/Game.UpgradesById\[(\d+)\]/);
     if (match && parseInt(match[1], 10) === upgrade.id) {
@@ -29,7 +31,7 @@ function getUpgradeElement(upgrade) {
   return null;
 }
 
-function getUpgradeEffect(upgrade) {
+export function getUpgradeEffect(upgrade: CookieClicker.Upgrade) {
   // building upgrade
   if (upgrade.buildingTie === upgrade.buildingTie1) {
     return upgrade.buildingTie.cps(upgrade.buildingTie) * upgrade.buildingTie.amount;
@@ -42,11 +44,18 @@ function getUpgradeEffect(upgrade) {
 
   // synergy upgrade
   if (upgrade.buildingTie1 !== undefined && upgrade.buildingTie2 !== undefined) {
-    const matches = [...upgrade.desc.matchAll(new RegExp('<b>\\+([0-9.]+)% CpS</b>', 'g'))];
+    const regex = new RegExp(`<b>\\+([0-9.]+)% CpS</b>`, 'g');
+    const matches: string[][] = [];
+    let match;
+
+    while ((match = regex.exec(upgrade.desc)) !== null) {
+      matches.push(match);
+    }
+
     if (matches.length === 2) {
       const b1 = upgrade.buildingTie1;
       const b2 = upgrade.buildingTie2;
-      return b1.cps(b1) * matches[0][1] * b2.amount + b2.cps(b2) * matches[1][1] * b1.amount;
+      return b1.cps(b1) * Number(matches[0][1]) * b2.amount + b2.cps(b2) * Number(matches[1][1]) * b1.amount;
     }
     return undefined;
   }
@@ -65,7 +74,7 @@ function getUpgradeEffect(upgrade) {
     return Game.cookiesPs * (upgrade.power / 100);
   }
   // clicking upgrade
-  if (upgrade.desc.includes('Clicking')) {
+  if (upgrade.desc.indexOf('Clicking') !== -1) {
     // TODO: figure out value of clicking
     return undefined;
   }
@@ -103,7 +112,7 @@ function getUpgradeEffect(upgrade) {
     return nonCursorBuildings * (cursors / 100) * parseInt(multGain1000FingersMatch[1], 10);
   }
 
-  if (upgrade.desc.includes('The mouse and cursors are ')) {
+  if (upgrade.desc.indexOf('The mouse and cursors are ') !== -1) {
     // TODO: factor in clicking for calculation
     const cursor = Game.Objects.Cursor;
     return cursor.cps(cursor) * cursor.amount;
@@ -115,13 +124,17 @@ function getUpgradeEffect(upgrade) {
       return Game.cookiesPs * (parseInt(match[1], 10) / 100);
     }
   }
+
+  if (upgrade.name === 'A festive hat') {
+    return Infinity;
+  }
   return undefined;
 }
 
-function borderBestUpgrade() {
+export function highlightBestUpgrade() {
   return setInterval(() => {
     const upgrades = getAvailableUpgrades().map(
-      (x) => [x, getUpgradeEffect(x) / x.basePrice || 0],
+      (x): [CookieClicker.Upgrade, number] => [x, getUpgradeEffect(x) / x.basePrice || 0],
     );
     upgrades.sort((a, b) => b[1] - a[1]);
 
@@ -141,11 +154,3 @@ function borderBestUpgrade() {
     }
   }, 150);
 }
-
-module.exports = {
-  borderBestUpgrade,
-  getAvailableUpgrades,
-  getUpgradeEffect,
-  getUpgradeElement,
-  getUpgradeElements,
-};

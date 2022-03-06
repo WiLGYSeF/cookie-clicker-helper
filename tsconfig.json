@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "outDir": "./dist/",
+      "noImplicitAny": true,
+      "module": "es6",
+      "target": "es6",
+      "allowJs": true,
+      "moduleResolution": "node",
+      "typeRoots": [
+        "./types"
+      ]
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [],
+    "files": [
+      "./typings/cookie-clicker/index.d.ts"
+    ]
+}
