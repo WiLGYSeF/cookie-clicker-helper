@@ -1,11 +1,13 @@
-const upgrade = require('./upgrade');
-const util = require('./util');
+import { getUpgradeEffect } from './upgrade';
+import { elementMutationObserver, getFirstElementByClassName, secondsToStr, toNumber } from './util';
 
-const tooltipHooks = [];
+declare const Game: CookieClicker.Game;
 
-function tooltipHook() {
+const tooltipHooks: Function[] = [];
+
+function tooltipHook(): MutationObserver {
   const tooltip = document.getElementById('tooltip');
-  return util.elementMutationObserver(tooltip, () => {
+  return elementMutationObserver(tooltip, () => {
     let modified = 0;
     for (const hook of tooltipHooks) {
       if (hook(tooltip)) {
@@ -16,10 +18,10 @@ function tooltipHook() {
   });
 }
 
-function ascendTooltipHook() {
+function ascendTooltipHook(): MutationObserver {
   const tooltip = document.getElementById('ascendTooltip');
-  return util.elementMutationObserver(tooltip, () => {
-    let eleRemainingTime = util.getFirstElementByClassName(tooltip, 'remaining-time');
+  return elementMutationObserver(tooltip, () => {
+    let eleRemainingTime = getFirstElementByClassName(tooltip, 'remaining-time');
     if (eleRemainingTime === null) {
       eleRemainingTime = document.createElement('span');
       eleRemainingTime.classList.add('remaining-time');
@@ -30,8 +32,8 @@ function ascendTooltipHook() {
     for (const b of tooltip.getElementsByTagName('b')) {
       const match = b.innerHTML.match(/^(.+) more cookies$/);
       if (match != null) {
-        eleRemainingTime.innerHTML = util.secondsToStr(
-          Math.trunc(util.toNumber(match[1]) / Game.cookiesPs),
+        eleRemainingTime.innerHTML = secondsToStr(
+          Math.floor(toNumber(match[1]) / Game.cookiesPs),
         );
         break;
       }
@@ -40,13 +42,13 @@ function ascendTooltipHook() {
   });
 }
 
-function tooltipPriceInTime(tooltip) {
-  const elePrice = util.getFirstElementByClassName(tooltip, 'price');
+function tooltipPriceInTime(tooltip: HTMLElement): boolean {
+  const elePrice = getFirstElementByClassName(tooltip, 'price');
   if (elePrice === null || elePrice.classList.contains('lump')) {
     return false;
   }
 
-  const price = util.toNumber(elePrice.innerHTML);
+  const price = toNumber(elePrice.innerHTML);
   const parent = elePrice.parentElement;
 
   for (const small of parent.getElementsByTagName('small')) {
@@ -58,7 +60,7 @@ function tooltipPriceInTime(tooltip) {
     }
   }
 
-  let elePriceTime = util.getFirstElementByClassName(tooltip, 'price-time');
+  let elePriceTime = getFirstElementByClassName(tooltip, 'price-time');
   if (elePriceTime === null) {
     elePriceTime = document.createElement('span');
     elePriceTime.classList.add('price-time');
@@ -68,22 +70,22 @@ function tooltipPriceInTime(tooltip) {
     parent.appendChild(elePriceTime);
   }
 
-  elePriceTime.innerHTML = util.secondsToStr(Math.trunc(price / Game.cookiesPs));
+  elePriceTime.innerHTML = secondsToStr(Math.floor(price / Game.cookiesPs));
 
-  const tag = util.getFirstElementByClassName(tooltip, 'tag');
+  const tag = getFirstElementByClassName(tooltip, 'tag');
   let production;
   if (tag && tag.innerHTML.match(/Upgrade|Cookie|Tech/)) {
-    const upg = Game.Upgrades[util.getFirstElementByClassName(tooltip, 'name').innerHTML];
+    const upg = Game.Upgrades[getFirstElementByClassName(tooltip, 'name').innerHTML];
     if (upg) { // TODO: fix some names not being correct
-      production = upgrade.getUpgradeEffect(upg);
+      production = getUpgradeEffect(upg);
     }
   } else {
-    const data = util.getFirstElementByClassName(tooltip, 'data');
+    const data = getFirstElementByClassName(tooltip, 'data');
     if (data === null) {
       return true;
     }
-    const bold = util.getFirstElementByTagName(data, 'b');
-    production = util.toNumber(bold.innerHTML);
+    const bold = data.querySelector('b');
+    production = toNumber(bold.innerHTML);
   }
 
   /* eslint-disable-next-line no-restricted-globals */
@@ -91,7 +93,7 @@ function tooltipPriceInTime(tooltip) {
     return true;
   }
 
-  let eleCostRatio = util.getFirstElementByClassName(tooltip, 'cost-ratio');
+  let eleCostRatio = tooltip.querySelector('.cost-ratio');
   if (eleCostRatio === null) {
     eleCostRatio = document.createElement('span');
     eleCostRatio.classList.add('cost-ratio');
@@ -107,7 +109,7 @@ function tooltipPriceInTime(tooltip) {
   return true;
 }
 
-function tooltipMagicRefillTime(tooltip) {
+function tooltipMagicRefillTime(tooltip: HTMLElement): boolean {
   const grimoireBarText = document.getElementById('grimoireBarText');
   if (grimoireBarText == null) {
     return false;
@@ -133,7 +135,7 @@ function tooltipMagicRefillTime(tooltip) {
       continue;
     }
 
-    let eleRefillTime = util.getFirstElementByClassName(tooltip, 'refill-time');
+    let eleRefillTime = tooltip.querySelector('.refill-time');
     if (eleRefillTime === null) {
       const line = document.createElement('div');
       line.classList.add('line');
@@ -144,7 +146,7 @@ function tooltipMagicRefillTime(tooltip) {
       div.appendChild(eleRefillTime);
     }
 
-    eleRefillTime.innerHTML = 'Refills in ' + util.secondsToStr(Math.trunc(remainingTime));
+    eleRefillTime.innerHTML = 'Refills in ' + secondsToStr(Math.floor(remainingTime));
     return true;
   }
   return false;
@@ -153,11 +155,7 @@ function tooltipMagicRefillTime(tooltip) {
 tooltipHooks.push(tooltipPriceInTime);
 tooltipHooks.push(tooltipMagicRefillTime);
 
-function modifyTooltips() {
+export function modifyTooltips() {
   tooltipHook();
   ascendTooltipHook();
 }
-
-module.exports = {
-  modifyTooltips,
-};
