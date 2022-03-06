@@ -1,6 +1,6 @@
 declare const Game: CookieClicker.Game;
 
-export function highlightBestProduct() {
+export function highlightBestProduct(): number {
   return setInterval(() => {
     const products = Game.ObjectsById.filter(
       (x) => !x.locked,

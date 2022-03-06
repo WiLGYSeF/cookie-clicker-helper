@@ -1,8 +1,8 @@
-const util = require('./util');
+declare const Game: CookieClicker.Game;
 
 let autoclicking = 0;
 
-function autoclick(duration) {
+function autoclick(duration: number): number {
   const bigCookie = document.getElementById('bigCookie');
 
   autoclicking++;
@@ -19,28 +19,29 @@ function autoclick(duration) {
   return intv;
 }
 
-function autoclickGoldenCookies(clickWrath = false) {
+export function autoclickGoldenCookies(clickWrath = false): number {
   return setInterval(() => {
     const shimmers = document.getElementsByClassName('shimmer');
-    for (const shimmer of shimmers) {
+    Array.prototype.forEach.call(shimmers, (shimmer: HTMLElement) => {
+      const value = shimmer.attributes.getNamedItem('alt').nodeValue;
       if (
-        shimmer.attributes.alt.nodeValue === 'Golden cookie'
-        || (clickWrath && shimmer.attributes.alt.nodeValue === 'Wrath cookie')
-        || shimmer.attributes.alt.nodeValue === 'Reindeer'
+        value === 'Golden cookie'
+        || (clickWrath && value === 'Wrath cookie')
+        || value === 'Reindeer'
       ) {
         shimmer.click();
       }
-    }
+    });
   }, 1000);
 }
 
-function isAutoclicking() {
+function isAutoclicking(): boolean {
   return autoclicking > 0;
 }
 
-function autoclickWhenBuffed() {
+export function autoclickWhenBuffed(): number {
   return setInterval(() => {
-    const buffs = Object.values(Game.buffs);
+    const buffs = Object.keys(Game.buffs).map((k) => Game.buffs[k]);
     if (buffs.length === 0) {
       return;
     }
@@ -61,20 +62,12 @@ function autoclickWhenBuffed() {
   }, 1000);
 }
 
-function autoclickFortune() {
+export function autoclickFortune(): number {
   const eleCommentsText = document.getElementById('commentsText');
   return setInterval(() => {
-    const fortune = util.getFirstElementByClassName(eleCommentsText, 'fortune');
+    const fortune = eleCommentsText.querySelector('.fortune');
     if (fortune !== null) {
-      fortune.click();
+      (fortune as HTMLElement).click();
     }
   }, 1000);
 }
-
-module.exports = {
-  autoclick,
-  isAutoclicking,
-  autoclickGoldenCookies,
-  autoclickWhenBuffed,
-  autoclickFortune,
-};

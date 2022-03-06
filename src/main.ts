@@ -5,11 +5,11 @@
 // TODO: Game.cookiesPs does not take into account wrinklers
 // TODO: sugar lump click?
 
-const autoclick = require('./autoclick');
+import { autoclickFortune, autoclickGoldenCookies, autoclickWhenBuffed } from './autoclick';
 import { highlightBestProduct } from './building';
-const garden = require('./garden');
-const tooltip = require('./tooltip');
-const upgrade = require('./upgrade');
+// const garden = require('./garden');
+// const tooltip = require('./tooltip');
+// const upgrade = require('./upgrade');
 import { getFirstElementByClassName, toNumberStr } from './util';
 
 declare const Game: CookieClicker.Game;
@@ -52,14 +52,14 @@ function cookieInfo() {
   }, 200);
 }
 
-tooltip.modifyTooltips();
+// tooltip.modifyTooltips();
 
 highlightBestProduct();
-upgrade.borderBestUpgrade();
+// upgrade.borderBestUpgrade();
 
 // garden.harvestEOL();
 
-autoclick.autoclickGoldenCookies(true);
-autoclick.autoclickWhenBuffed();
-autoclick.autoclickFortune();
+autoclickGoldenCookies(true);
+autoclickWhenBuffed();
+autoclickFortune();
 cookieInfo();
