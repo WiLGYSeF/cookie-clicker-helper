@@ -44,7 +44,14 @@ export function getUpgradeEffect(upgrade: CookieClicker.Upgrade) {
 
   // synergy upgrade
   if (upgrade.buildingTie1 !== undefined && upgrade.buildingTie2 !== undefined) {
-    const matches = [...(upgrade.desc as any).matchAll(new RegExp(`<b>\\+([0-9.]+)% CpS</b>`, 'g'))];
+    const regex = new RegExp(`<b>\\+([0-9.]+)% CpS</b>`, 'g');
+    const matches: string[][] = [];
+    let match;
+
+    while ((match = regex.exec(upgrade.desc)) !== null) {
+      matches.push(match);
+    }
+
     if (matches.length === 2) {
       const b1 = upgrade.buildingTie1;
       const b2 = upgrade.buildingTie2;
