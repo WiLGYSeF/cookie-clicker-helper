@@ -6,13 +6,13 @@
 // TODO: sugar lump click?
 
 const autoclick = require('./autoclick');
-const building = require('./building');
+import { highlightBestProduct } from './building';
 const garden = require('./garden');
 const tooltip = require('./tooltip');
 const upgrade = require('./upgrade');
 const util = require('./util');
 
-declare const Game: any;
+declare const Game: CookieClicker.Game;
 
 function cookieInfo() {
   let eleInfo = util.getFirstElementByClassName(document, 'cookie-info');
@@ -54,7 +54,7 @@ function cookieInfo() {
 
 tooltip.modifyTooltips();
 
-building.borderBestProduct();
+highlightBestProduct();
 upgrade.borderBestUpgrade();
 
 // garden.harvestEOL();

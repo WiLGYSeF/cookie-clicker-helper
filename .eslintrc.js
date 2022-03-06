@@ -10,9 +10,6 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  globals: {
-    Game: true,
-  },
   parser: '@typescript-eslint/parser',
   plugins: [
     '@typescript-eslint',
