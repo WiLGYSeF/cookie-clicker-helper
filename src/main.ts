@@ -9,7 +9,7 @@ import { autoclickFortune, autoclickGoldenCookies, autoclickWhenBuffed } from '.
 import { highlightBestProduct } from './building';
 import { harvestEol } from './garden';
 // const tooltip = require('./tooltip');
-// const upgrade = require('./upgrade');
+import { highlightBestUpgrade } from './upgrade';
 import { getFirstElementByClassName, toNumberStr } from './util';
 
 declare const Game: CookieClicker.Game;
@@ -55,7 +55,7 @@ function cookieInfo() {
 // tooltip.modifyTooltips();
 
 highlightBestProduct();
-// upgrade.borderBestUpgrade();
+highlightBestUpgrade();
 
 // harvestEOL();
 
