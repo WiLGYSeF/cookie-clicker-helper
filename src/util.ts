@@ -21,10 +21,10 @@ const numberStrMap = {
   vigintillion: 1e63,
 };
 
-function elementMutationObserver(element, callback) {
+export function elementMutationObserver(element: Node, callback: Function): MutationObserver {
   let skip = 0;
 
-  const observer = new MutationObserver((mutationsList, obs) => {
+  const observer = new MutationObserver((mutationsList) => {
     if (skip > 0) {
       skip--;
       return;
@@ -51,39 +51,39 @@ function elementMutationObserver(element, callback) {
   return observer;
 }
 
-function getFirstElementByClassName(element, name) {
+export function getFirstElementByClassName(element: HTMLElement, name: string): HTMLElement {
   const elements = element.getElementsByClassName(name);
-  return elements.length !== 0 ? elements[0] : null;
+  return elements.length !== 0 ? elements[0] as HTMLElement : null;
 }
 
-function getFirstElementByTagName(element, name) {
+export function getFirstElementByTagName(element: HTMLElement, name: string): HTMLElement {
   const elements = element.getElementsByTagName(name);
-  return elements.length !== 0 ? elements[0] : null;
+  return elements.length !== 0 ? elements[0] as HTMLElement : null;
 }
 
-function toNumber(val) {
+export function toNumber(val: string): number {
   const parts = val.replace(/,/g, '').split(' ');
 
   if (parts.length === 1) {
-    return parseFloat(parts[0], 10);
+    return parseFloat(parts[0]);
   } if (parts.length === 2) {
-    return parseFloat(parts[0]) * numberStrMap[parts[1]];
+    return parseFloat(parts[0]) * numberStrMap[parts[1] as keyof typeof numberStrMap];
   }
   return NaN;
 }
 
-function toNumberStr(val) {
+export function toNumberStr(val: number): string {
   const keys = Object.keys(numberStrMap);
   for (let i = keys.length - 1; i >= 0; i--) {
-    const mult = numberStrMap[keys[i]];
+    const mult = numberStrMap[keys[i] as keyof typeof numberStrMap];
     if (mult < val) {
       return `${(val / mult).toFixed(3)} ${keys[i]}`;
     }
   }
-  return val;
+  return val.toString();
 }
 
-const UNITS = [
+const UNITS: [number, string][] = [
   [31536000, 'y'],
   [86400, 'd'],
   [3600, 'h'],
@@ -91,18 +91,18 @@ const UNITS = [
   [1, 's'],
 ];
 
-function secondsToStr(seconds) {
+export function secondsToStr(seconds: number) {
   let sec = seconds;
   let str = '';
   let count = 0;
 
-  if (!Number.isFinite(seconds)) {
+  if (!isFinite(seconds)) {
     return 'never';
   }
 
   for (const unit of UNITS) {
     if (sec >= unit[0]) {
-      str += `${Math.trunc(sec / unit[0])}${unit[1]} `;
+      str += `${Math.floor(sec / unit[0])}${unit[1]} `;
       sec %= unit[0];
       count++;
     }
@@ -112,12 +112,3 @@ function secondsToStr(seconds) {
   }
   return str.length === 0 ? '0s' : str.substring(0, str.length - 1);
 }
-
-module.exports = {
-  elementMutationObserver,
-  getFirstElementByClassName,
-  getFirstElementByTagName,
-  toNumber,
-  toNumberStr,
-  secondsToStr,
-};

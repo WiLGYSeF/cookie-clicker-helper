@@ -10,12 +10,12 @@ import { highlightBestProduct } from './building';
 const garden = require('./garden');
 const tooltip = require('./tooltip');
 const upgrade = require('./upgrade');
-const util = require('./util');
+import { getFirstElementByClassName, toNumberStr } from './util';
 
 declare const Game: CookieClicker.Game;
 
 function cookieInfo() {
-  let eleInfo = util.getFirstElementByClassName(document, 'cookie-info');
+  let eleInfo = getFirstElementByClassName(document.body, 'cookie-info');
   if (eleInfo === null) {
     eleInfo = document.createElement('div');
     eleInfo.classList.add('cookie-info');
@@ -24,7 +24,7 @@ function cookieInfo() {
     eleInfo.style.background = 'rgba(0, 0, 0, 0.4)';
     eleInfo.style.fontWeight = 'bold';
     eleInfo.style.textAlign = 'center';
-    eleInfo.style.zIndex = 5;
+    eleInfo.style.zIndex = '5';
 
     const wrinklerCookies = document.createElement('p');
     wrinklerCookies.classList.add('wrinkler-cookies');
@@ -34,7 +34,7 @@ function cookieInfo() {
     eleCookies.parentElement.insertBefore(eleInfo, eleCookies.nextSibling);
   }
 
-  const wrinklerCookies = util.getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
+  const wrinklerCookies = getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
 
   return setInterval(() => {
     let totalCookies = 0;
@@ -47,8 +47,8 @@ function cookieInfo() {
       }
     }
 
-    wrinklerCookies.innerHTML = `Wrinkler Yield: total ${util.toNumberStr(totalCookies)}`
-    + ` / avg ${util.toNumberStr(wrinklerCount !== 0 ? totalCookies / wrinklerCount : 0)} cookies`;
+    wrinklerCookies.innerHTML = `Wrinkler Yield: total ${toNumberStr(totalCookies)}`
+    + ` / avg ${toNumberStr(wrinklerCount !== 0 ? totalCookies / wrinklerCount : 0)} cookies`;
   }, 200);
 }
 
