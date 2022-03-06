@@ -10,12 +10,12 @@ import { highlightBestProduct } from './building';
 import { harvestEol } from './garden';
 import { modifyTooltips } from './tooltip';
 import { highlightBestUpgrade } from './upgrade';
-import { getFirstElementByClassName, toNumberStr } from './util';
+import { toNumberStr } from './util';
 
 declare const Game: CookieClicker.Game;
 
 function cookieInfo() {
-  let eleInfo = getFirstElementByClassName(document.body, 'cookie-info');
+  let eleInfo = document.querySelector('.cookie-info') as HTMLElement;
   if (eleInfo === null) {
     eleInfo = document.createElement('div');
     eleInfo.classList.add('cookie-info');
@@ -34,7 +34,7 @@ function cookieInfo() {
     eleCookies.parentElement.insertBefore(eleInfo, eleCookies.nextSibling);
   }
 
-  const wrinklerCookies = getFirstElementByClassName(eleInfo, 'wrinkler-cookies');
+  const wrinklerCookies = eleInfo.querySelector('.wrinkler-cookies');
 
   return setInterval(() => {
     let totalCookies = 0;

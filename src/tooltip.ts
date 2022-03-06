@@ -1,5 +1,5 @@
 import { getUpgradeEffect } from './upgrade';
-import { elementMutationObserver, getFirstElementByClassName, secondsToStr, toNumber } from './util';
+import { elementMutationObserver, secondsToStr, toNumber } from './util';
 
 declare const Game: CookieClicker.Game;
 
@@ -21,7 +21,7 @@ function tooltipHook(): MutationObserver {
 function ascendTooltipHook(): MutationObserver {
   const tooltip = document.getElementById('ascendTooltip');
   return elementMutationObserver(tooltip, () => {
-    let eleRemainingTime = getFirstElementByClassName(tooltip, 'remaining-time');
+    let eleRemainingTime = tooltip.querySelector('.remaining-time');
     if (eleRemainingTime === null) {
       eleRemainingTime = document.createElement('span');
       eleRemainingTime.classList.add('remaining-time');
@@ -43,7 +43,7 @@ function ascendTooltipHook(): MutationObserver {
 }
 
 function tooltipPriceInTime(tooltip: HTMLElement): boolean {
-  const elePrice = getFirstElementByClassName(tooltip, 'price');
+  const elePrice = tooltip.querySelector('.price');
   if (elePrice === null || elePrice.classList.contains('lump')) {
     return false;
   }
@@ -60,7 +60,7 @@ function tooltipPriceInTime(tooltip: HTMLElement): boolean {
     }
   }
 
-  let elePriceTime = getFirstElementByClassName(tooltip, 'price-time');
+  let elePriceTime = tooltip.querySelector('.price-time');
   if (elePriceTime === null) {
     elePriceTime = document.createElement('span');
     elePriceTime.classList.add('price-time');
@@ -72,15 +72,15 @@ function tooltipPriceInTime(tooltip: HTMLElement): boolean {
 
   elePriceTime.innerHTML = secondsToStr(Math.floor(price / Game.cookiesPs));
 
-  const tag = getFirstElementByClassName(tooltip, 'tag');
+  const tag = tooltip.querySelector('.tag');
   let production;
   if (tag && tag.innerHTML.match(/Upgrade|Cookie|Tech/)) {
-    const upg = Game.Upgrades[getFirstElementByClassName(tooltip, 'name').innerHTML];
+    const upg = Game.Upgrades[tooltip.querySelector('.name').innerHTML];
     if (upg) { // TODO: fix some names not being correct
       production = getUpgradeEffect(upg);
     }
   } else {
-    const data = getFirstElementByClassName(tooltip, 'data');
+    const data = tooltip.querySelector('.data');
     if (data === null) {
       return true;
     }

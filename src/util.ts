@@ -51,16 +51,6 @@ export function elementMutationObserver(element: Node, callback: Function): Muta
   return observer;
 }
 
-export function getFirstElementByClassName(element: HTMLElement, name: string): HTMLElement {
-  const elements = element.getElementsByClassName(name);
-  return elements.length !== 0 ? elements[0] as HTMLElement : null;
-}
-
-export function getFirstElementByTagName(element: HTMLElement, name: string): HTMLElement {
-  const elements = element.getElementsByTagName(name);
-  return elements.length !== 0 ? elements[0] as HTMLElement : null;
-}
-
 export function toNumber(val: string): number {
   const parts = val.replace(/,/g, '').split(' ');
 
