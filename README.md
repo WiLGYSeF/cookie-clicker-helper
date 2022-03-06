@@ -30,3 +30,8 @@ Last tested for version v. 2.031.
 - Adds an approximate refill timer to the magic meter tooltip.
 - Clicks on Golden cookies/Reindeer.
   - Will click on the big cookie if a golden cookie yields a buff.
+
+# ToDo
+
+- Click on sugar lumps when they're ready
+- Auto-harvest garden plants
