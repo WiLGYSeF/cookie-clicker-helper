@@ -115,6 +115,10 @@ function getUpgradeEffect(upgrade) {
       return Game.cookiesPs * (parseInt(match[1], 10) / 100);
     }
   }
+
+  if (upgrade.name === 'A festive hat') {
+    return Infinity;
+  }
   return undefined;
 }
 

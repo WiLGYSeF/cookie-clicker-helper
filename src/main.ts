@@ -1,13 +1,18 @@
 // https://orteil.dashnet.org/cookieclicker/
 
+// TODO: garden harvest
+
 // TODO: Game.cookiesPs does not take into account wrinklers
-// TODO: autoclickWhenBuffed() does not know if buff times change
+// TODO: sugar lump click?
 
 const autoclick = require('./autoclick');
 const building = require('./building');
+const garden = require('./garden');
 const tooltip = require('./tooltip');
 const upgrade = require('./upgrade');
 const util = require('./util');
+
+declare const Game: any;
 
 function cookieInfo() {
   let eleInfo = util.getFirstElementByClassName(document, 'cookie-info');
@@ -51,6 +56,8 @@ tooltip.modifyTooltips();
 
 building.borderBestProduct();
 upgrade.borderBestUpgrade();
+
+// garden.harvestEOL();
 
 autoclick.autoclickGoldenCookies(true);
 autoclick.autoclickWhenBuffed();
