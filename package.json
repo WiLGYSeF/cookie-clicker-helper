@@ -3,6 +3,8 @@
     "build": "webpack"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
     "eslint": "^7.28.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "ts-loader": "^9.2.7",

@@ -5,10 +5,16 @@
       "module": "es6",
       "target": "es5",
       "allowJs": true,
-      "moduleResolution": "node"
+      "moduleResolution": "node",
+      "typeRoots": [
+        "./types"
+      ]
     },
     "include": [
         "src/**/*"
     ],
-    "exclude": []
+    "exclude": [],
+    "files": [
+      "./typings/cookie-clicker/index.d.ts"
+    ]
 }

@@ -13,11 +13,17 @@ module.exports = {
   globals: {
     Game: true,
   },
-  plugins: [],
+  parser: '@typescript-eslint/parser',
+  plugins: [
+    '@typescript-eslint',
+  ],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   rules: {
     'no-continue': 'off',
     'no-plusplus': 'off',
     'no-restricted-syntax': 0,
-    'prefer-template': 'off',
   },
 };
