@@ -7,7 +7,7 @@
 
 import { autoclickFortune, autoclickGoldenCookies, autoclickWhenBuffed } from './autoclick';
 import { highlightBestProduct } from './building';
-// const garden = require('./garden');
+import { harvestEol } from './garden';
 // const tooltip = require('./tooltip');
 // const upgrade = require('./upgrade');
 import { getFirstElementByClassName, toNumberStr } from './util';
@@ -57,7 +57,7 @@ function cookieInfo() {
 highlightBestProduct();
 // upgrade.borderBestUpgrade();
 
-// garden.harvestEOL();
+// harvestEOL();
 
 autoclickGoldenCookies(true);
 autoclickWhenBuffed();

@@ -1,10 +1,12 @@
-const garden = Game.ObjectsById[2].minigame;
+declare const Game: CookieClicker.Game;
 
-function harvestEOL() {
+export const garden = Game.ObjectsById[2].minigame;
+
+export function harvestEol(): number {
   const harvestIntv = 30 * 1000;
   return setInterval(() => {
     const now = new Date();
-    if (garden.nextStep - now > harvestIntv) {
+    if (garden.nextStep - now.getTime() > harvestIntv) {
       return;
     }
 
@@ -19,8 +21,3 @@ function harvestEOL() {
     }
   }, harvestIntv);
 }
-
-module.exports = {
-  garden,
-  harvestEOL,
-};
